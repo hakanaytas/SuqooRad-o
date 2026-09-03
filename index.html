@@ -1,1188 +1,787 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<meta name="author" content="Hakan Aytaş (Codebug Developer), Şükran Aytaş">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SUQOO — Dünyanın sesi, tek yerde.</title>
-<meta name="theme-color" content="#0A0C10">
+<title>SUQOO — Canlı Radyo</title>
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SUQOO">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%BB%3C/text%3E%3C/svg%3E">
+<meta name="application-name" content="SUQOO">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23121212'/%3E%3Ctext x='50' y='72' font-size='62' text-anchor='middle'%3E%F0%9F%93%BB%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" id="appleIcon" href="">
 <link rel="manifest" id="manifestLink" href="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0A0C10;
-  --bg-elev:#12151B;
-  --card:#171B22;
-  --card-hover:#1E232C;
-  --line:rgba(255,255,255,.07);
-  --text:#F2F0EC;
-  --text-dim:#9AA0AC;
-  --text-faint:#5C6270;
-  --gold:#FFC24B;
-  --coral:#FF5F6D;
-  --teal:#31E1C9;
-  --grad: linear-gradient(120deg,var(--gold),var(--coral));
-  --radius:18px;
-  --radius-sm:12px;
-  --nav-h:64px;
-  --player-h:84px;
+  --bg:#000; --panel:#121212; --panel2:#181818; --hover:#282828; --line:#2a2a2a;
+  --text:#fff; --dim:#b3b3b3; --faint:#7a7a7a;
+  --accent:#1ED760; --accent-dark:#169c46; --on-accent:#000;
+  --r:8px; --player:90px; --side:260px; --mnav:58px;
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;}
-body{
-  background:radial-gradient(circle at 15% -10%, #1B1420 0%, transparent 45%),
-             radial-gradient(circle at 90% 0%, #101A22 0%, transparent 40%),
-             var(--bg);
-  color:var(--text);
-  font-family:'Inter',system-ui,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-body.light{
-  --bg:#F5F5F2; --bg-elev:#FFFFFF; --card:#FFFFFF; --card-hover:#ECEBE6;
-  --line:rgba(20,22,26,.09); --text:#14161A; --text-dim:#5B616C; --text-faint:#9096A0;
-  background:var(--bg);
-}
-body.light .sidebar{background:linear-gradient(180deg,#FFFFFF,#F7F6F2);}
-body.light .topbar{background:rgba(245,245,242,.78);}
-body.light .player{background:rgba(255,255,255,.86);}
-body.light .mobile-nav{background:rgba(255,255,255,.78);border-color:rgba(20,22,26,.09);}
-body.light input[type=range]{background:#E1DFD9;}
-body.light .p-play svg,body.light .p-play .spinner{color:#fff;}
-h1,h2,h3,.brand,.section-title{font-family:'Space Grotesk',sans-serif;}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
-input{font-family:inherit;color:inherit;}
-img{display:block;max-width:100%;}
-::-webkit-scrollbar{width:8px;height:8px;}
-::-webkit-scrollbar-thumb{background:#282d36;border-radius:8px;}
-
-#app{display:flex;min-height:100vh;}
-
-.sidebar{
-  width:236px;flex-shrink:0;display:none;flex-direction:column;
-  padding:28px 18px;background:linear-gradient(180deg,#0D0F14,#0A0C10);
-  border-right:1px solid var(--line);position:static;
-}
-.brand{display:flex;align-items:center;gap:10px;padding:0 6px 8px;}
-.brand-mark{
-  width:38px;height:38px;border-radius:11px;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;color:#0A0C10;font-size:17px;flex-shrink:0;
-}
-.brand-text .name{font-size:19px;font-weight:700;letter-spacing:.2px;}
-.brand-text .slogan{font-size:11px;color:var(--text-dim);margin-top:1px;}
-
-.side-nav{margin-top:34px;display:flex;flex-direction:column;gap:4px;}
-.nav-item{
-  display:flex;align-items:center;gap:13px;padding:11px 14px;border-radius:var(--radius-sm);
-  color:var(--text-dim);font-weight:600;font-size:14.5px;transition:background .18s,color .18s;
-}
-.nav-item svg{width:20px;height:20px;flex-shrink:0;}
-.nav-item:hover{background:var(--card);color:var(--text);}
-.nav-item.active{background:var(--card);color:var(--text);}
-.nav-item.active svg{color:var(--gold);}
-
-.side-foot{margin-top:auto;padding:14px 6px 4px;border-top:1px solid var(--line);}
-.side-foot .dev{font-size:11px;color:var(--text-faint);line-height:1.5;}
-.side-foot .dev b{color:var(--text-dim);}
-
-.main{flex:1;min-width:0;display:flex;flex-direction:column;padding-bottom:calc(var(--player-h) + 90px);}
-
-.topbar{position:sticky;top:0;z-index:40;
-  background:rgba(10,12,16,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  border-bottom:1px solid var(--line);
-}
-.topbar-inner{display:flex;align-items:center;gap:14px;padding:14px 18px;}
-.mobile-brand{display:flex;align-items:center;gap:9px;flex-shrink:0;}
-.mobile-brand .brand-mark{width:32px;height:32px;font-size:14px;border-radius:9px;}
-.mobile-brand .name{font-size:16px;font-weight:700;}
-.search-wrap{flex:1;position:relative;max-width:520px;}
-.search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--text-faint);}
-.search-wrap input{
-  width:100%;padding:10.5px 14px 10.5px 40px;border-radius:999px;
-  background:var(--card);border:1px solid var(--line);color:var(--text);
-  font-size:13.5px;outline:none;transition:border-color .18s,background .18s;
-}
-.search-wrap input:focus{border-color:var(--gold);background:var(--card-hover);}
-.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;background:var(--card-hover);display:none;align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;}
-.search-clear.show{display:flex;}
-
-.view{padding:22px 18px 8px;display:none;animation:fadein .35s ease;}
-.view.active{display:block;}
-@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
-.hero{margin-bottom:26px;}
-.hero h1{font-size:26px;font-weight:700;line-height:1.25;}
-.hero p{color:var(--text-dim);font-size:13.5px;margin-top:6px;}
-
-.section{margin-bottom:30px;}
-.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
-.section-title{font-size:16.5px;font-weight:600;}
-.section-sub{font-size:12px;color:var(--text-faint);margin-top:2px;}
-.link-btn{font-size:12.5px;color:var(--gold);font-weight:600;}
-
-.chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
-.chip{
-  display:inline-flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:999px;
-  font-weight:700;font-size:12.5px;color:var(--text);background:var(--card);border:1px solid var(--line);
-  transition:transform .15s,background .15s;
-}
-.chip:hover{transform:translateY(-1px);background:var(--card-hover);}
-.chip .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:16px;}
-.station-card{
-  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:12px;transition:background .18s,transform .18s,opacity .3s;position:relative;
-}
-.station-card:hover{background:var(--card-hover);transform:translateY(-3px);}
-.station-card.removing{opacity:0;transform:scale(.9);}
-.art{
-  position:relative;width:100%;aspect-ratio:1/1;border-radius:12px;overflow:hidden;
-  background:linear-gradient(135deg,#20242c,#14171d);margin-bottom:10px;
-  display:flex;align-items:center;justify-content:center;
-}
-.art img{width:100%;height:100%;object-fit:cover;}
-.art .fallback-emoji{font-size:30px;line-height:1;}
-.play-overlay{
-  position:absolute;inset:0;background:rgba(6,7,9,.38);opacity:0;
-  display:flex;align-items:center;justify-content:center;transition:opacity .18s;
-}
-.station-card:hover .play-overlay{opacity:1;}
-.play-fab{
-  width:42px;height:42px;border-radius:50%;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;color:#0A0C10;
-  box-shadow:0 6px 18px rgba(255,95,109,.35);
-}
-.play-fab svg{width:18px;height:18px;}
-.fav-toggle{
-  position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;
-  background:rgba(10,12,16,.55);backdrop-filter:blur(6px);
-  display:flex;align-items:center;justify-content:center;z-index:2;
-}
-.fav-toggle svg{width:14px;height:14px;color:#fff;}
-.fav-toggle.active svg{color:var(--coral);}
-.st-name{font-size:13.5px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.st-meta{font-size:11px;color:var(--text-faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.station-card.playing .st-name{color:var(--gold);}
-.station-card.playing .art{box-shadow:0 0 0 2px var(--gold);}
-
-.empty-state{padding:40px 12px;text-align:center;color:var(--text-faint);font-size:13.5px;}
-.empty-state svg{width:34px;height:34px;margin:0 auto 10px;color:var(--text-faint);opacity:.6;}
-.loading{padding:30px 0;text-align:center;color:var(--text-faint);font-size:13px;}
-.spinner{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--line);border-top-color:var(--gold);animation:spin .7s linear infinite;margin:0 auto 10px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-.filter-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
-.select-wrap select{
-  appearance:none;background:var(--card);border:1px solid var(--line);color:var(--text);
-  padding:9px 30px 9px 13px;border-radius:999px;font-size:13px;font-weight:600;outline:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6' fill='%239AA0AC'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 12px center;
-}
-.tag-pill{
-  padding:9px 16px;border-radius:999px;background:var(--card);border:1px solid var(--line);
-  font-size:13px;font-weight:600;color:var(--text-dim);transition:.18s;
-}
-.tag-pill.active{background:var(--grad);color:#0A0C10;border-color:transparent;}
-
-.toast{
-  position:fixed;left:50%;bottom:calc(var(--player-h) + var(--nav-h) + 20px);
-  transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;
-  background:#1C2027;border:1px solid var(--line);color:var(--text);
-  padding:11px 18px;border-radius:12px;font-size:13px;z-index:200;
-  transition:opacity .25s,transform .25s;box-shadow:0 10px 30px rgba(0,0,0,.4);
-  max-width:88vw;text-align:center;
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* -------- player -------- */
-.player{
-  position:fixed;left:0;right:0;bottom:var(--nav-h);z-index:60;height:var(--player-h);
-  background:rgba(15,17,22,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
-  border-top:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:0 14px;
-  transform:translateY(100%);transition:transform .35s ease;cursor:pointer;
-}
-.player.visible{transform:translateY(0);}
-.player .p-controls{cursor:default;}
-.p-art{width:52px;height:52px;border-radius:11px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#20242c,#14171d);display:flex;align-items:center;justify-content:center;}
-.p-art img{width:100%;height:100%;object-fit:cover;}
-.p-art .fallback-emoji{font-size:20px;}
-.p-info{min-width:0;flex-shrink:1;width:130px;}
-.p-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p-sub{font-size:11px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px;}
-.wave{display:inline-flex;align-items:flex-end;gap:2px;height:10px;}
-.wave span{width:2.5px;background:var(--teal);border-radius:2px;height:3px;}
-.player.playing .wave span{animation:wv 1s ease-in-out infinite;}
-.wave span:nth-child(1){animation-delay:.0s;}
-.wave span:nth-child(2){animation-delay:.15s;}
-.wave span:nth-child(3){animation-delay:.3s;}
-@keyframes wv{0%,100%{height:3px;}50%{height:10px;}}
-
-.p-controls{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;}
-.p-fav svg{width:19px;height:19px;color:var(--text-dim);}
-.p-fav.active svg{color:var(--coral);}
-.p-skip{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .15s;}
-.p-skip:hover{background:var(--card-hover);}
-.p-skip svg{width:20px;height:20px;color:var(--text);}
-.p-play{
-  width:44px;height:44px;border-radius:50%;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;color:#0A0C10;flex-shrink:0;
-}
-.p-play svg{width:19px;height:19px;}
-.p-play .spinner{margin:0;width:18px;height:18px;border-width:2px;border-color:rgba(10,12,16,.25);border-top-color:#0A0C10;}
-.p-vol{display:none;align-items:center;gap:8px;}
-.p-vol svg{width:17px;height:17px;color:var(--text-dim);flex-shrink:0;}
-.p-vol input[type=range]{width:80px;}
-.p-stop svg{width:17px;height:17px;color:var(--text-faint);}
-input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:4px;background:#282d36;outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--gold);cursor:pointer;}
-input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--gold);border:none;cursor:pointer;}
-
-/* -------- expanded now playing -------- */
-.np-overlay{
-  position:fixed;inset:0;z-index:120;
-  background:linear-gradient(180deg,var(--bg-elev),var(--bg) 60%);
-  display:flex;flex-direction:column;align-items:center;
-  padding:14px 22px calc(env(safe-area-inset-bottom,0px) + 26px);
-  transform:translateY(105%);opacity:0;
-  transition:transform .38s cubic-bezier(.32,.72,0,1),opacity .3s;overflow-y:auto;
-}
-.np-overlay.open{transform:translateY(0);opacity:1;}
-.np-handle{width:38px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 6px;}
-.np-top{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:420px;margin-bottom:18px;}
-.np-collapse{width:34px;height:34px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;}
-.np-collapse svg{width:18px;height:18px;color:var(--text-dim);}
-.np-top-label{font-size:12.5px;font-weight:700;color:var(--text-dim);letter-spacing:.3px;}
-.np-art-wrap{width:100%;max-width:340px;flex:1;display:flex;align-items:center;justify-content:center;}
-.np-art{
-  width:min(64vw,300px);height:min(64vw,300px);border-radius:26px;overflow:hidden;
-  background:linear-gradient(135deg,#20242c,#14171d);display:flex;align-items:center;justify-content:center;
-  box-shadow:0 24px 60px rgba(0,0,0,.4);
-}
-.np-art img{width:100%;height:100%;object-fit:cover;}
-.np-art .fallback-emoji{font-size:80px;}
-.np-info{text-align:center;margin:22px 0 24px;max-width:380px;}
-.np-name{font-size:21px;font-weight:700;font-family:'Space Grotesk',sans-serif;}
-.np-sub{font-size:12.5px;color:var(--text-faint);margin-top:7px;display:flex;align-items:center;justify-content:center;gap:7px;}
-.np-controls{display:flex;align-items:center;gap:22px;margin-bottom:22px;}
-.np-fav svg,.np-stop svg{width:21px;height:21px;color:var(--text-dim);}
-.np-fav.active svg{color:var(--coral);}
-.np-skip{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--card);}
-.np-skip svg{width:24px;height:24px;color:var(--text);}
-.np-play{
-  width:68px;height:68px;border-radius:50%;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;color:#0A0C10;
-  box-shadow:0 10px 28px rgba(255,95,109,.3);
-}
-.np-play svg{width:27px;height:27px;}
-.np-play .spinner{margin:0;width:24px;height:24px;border-width:3px;border-color:rgba(10,12,16,.25);border-top-color:#0A0C10;}
-.np-vol{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;}
-.np-vol svg{width:18px;height:18px;color:var(--text-dim);flex-shrink:0;}
-.np-vol input[type=range]{width:100%;}
-.np-queue{font-size:11.5px;color:var(--text-faint);margin-top:14px;}
-
-/* -------- mobile nav -------- */
-.mobile-nav{
-  position:fixed;left:10px;right:10px;bottom:10px;height:56px;z-index:70;
-  background:rgba(18,21,27,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,.09);border-radius:26px;
-  display:flex;align-items:center;justify-content:space-around;
-  box-shadow:0 14px 40px rgba(0,0,0,.45);
-}
-.m-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text-faint);flex:1;height:100%;justify-content:center;position:relative;}
-.m-item svg{width:20px;height:20px;transition:.18s;}
-.m-item.active{color:var(--gold);}
-.m-item.active::after{content:"";position:absolute;top:6px;width:4px;height:4px;border-radius:50%;background:var(--gold);}
-
+body.light{--bg:#f2f2f2;--panel:#fff;--panel2:#fafafa;--hover:#e9e9e9;--line:#e2e2e2;--text:#121212;--dim:#5a5a5a;--faint:#8a8a8a;--accent:#169c46;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit}
+h1,h2,h3{font-family:'Plus Jakarta Sans',Inter,sans-serif}
+.app{display:grid;grid-template-columns:var(--side) 1fr;grid-template-rows:1fr var(--player);height:100vh;gap:8px;padding:8px;padding-bottom:0}
+/* sidebar */
+.side{background:var(--panel);border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden}
+.brand{display:flex;align-items:center;gap:10px;padding:18px 20px 10px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;letter-spacing:-.5px}
+.brand .logo{width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#000}
+.brand .logo svg{width:18px;height:18px}
+.nav{padding:6px 10px}
+.nav button{width:100%;display:flex;align-items:center;gap:16px;padding:10px 12px;border-radius:6px;color:var(--dim);font-weight:600;font-size:15px;transition:.15s}
+.nav button svg{width:22px;height:22px;flex-shrink:0}
+.nav button:hover,.nav button.active{color:var(--text)}
+.nav button.active{background:var(--hover)}
+.lib{flex:1;overflow:auto;padding:6px 10px 12px;border-top:1px solid var(--line);margin-top:6px}
+.lib h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);padding:10px 12px 6px}
+.lib .row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;cursor:pointer}
+.lib .row:hover{background:var(--hover)}
+.lib .row img,.lib .row .ph{width:40px;height:40px;border-radius:6px;object-fit:cover;background:var(--hover);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--faint)}
+.lib .row .t{min-width:0}.lib .row .n{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lib .row .s{font-size:12px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib .row.now .n{color:var(--accent)}
+/* main */
+.main{background:linear-gradient(180deg,#1f1f1f 0,var(--panel) 260px);border-radius:var(--r);overflow:auto;position:relative;scroll-behavior:smooth}
+body.light .main{background:var(--panel)}
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:14px 24px;background:rgba(18,18,18,.6);backdrop-filter:blur(14px)}
+body.light .topbar{background:rgba(255,255,255,.7)}
+.hist{display:flex;gap:6px}
+.hist button{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:var(--dim)}
+body.light .hist button{background:#e5e5e5}
+.hist svg{width:16px;height:16px}
+.search{flex:1;max-width:420px;position:relative}
+.search svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:var(--dim)}
+.search input{width:100%;height:42px;border-radius:999px;border:1px solid transparent;background:var(--hover);color:var(--text);padding:0 40px 0 40px;outline:0}
+.search input:focus{border-color:var(--dim)}
+.search .clr{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:50%;display:none;align-items:center;justify-content:center;color:var(--dim)}
+.search .clr.show{display:flex}.search .clr svg{position:static;transform:none;width:14px;height:14px}
+.topbar .sp{flex:1}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:var(--dim)}
+body.light .icon-btn{background:#e5e5e5}
+.icon-btn svg{width:18px;height:18px}.icon-btn:hover{color:var(--text);transform:scale(1.05)}
+.content{padding:8px 24px 40px}
+.view{display:none}.view.active{display:block}
+.sec{margin-top:28px}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+.sec-h h2{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.sec-h .more{font-size:13px;color:var(--dim);font-weight:600}.sec-h .more:hover{text-decoration:underline;color:var(--text)}
+.hero h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin-top:10px}
+.hero p{color:var(--dim);margin-top:6px}
+/* quick grid (spotify-like top tiles) */
+.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-top:18px}
+.quick .q{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;height:60px;transition:.15s;position:relative;text-align:left}
+body.light .quick .q{background:#e9e9e9}
+.quick .q:hover{background:rgba(255,255,255,.16)}
+.quick .q .c{width:60px;height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.quick .q .c svg{width:26px;height:26px;color:#fff}
+.quick .q span{font-weight:700;font-size:14px}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:16px}
+.card{background:var(--panel2);border-radius:var(--r);padding:14px;position:relative;cursor:pointer;transition:background .2s}
+.card:hover{background:var(--hover)}
+.art{position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;background:#2a2a2a;box-shadow:0 8px 24px rgba(0,0,0,.5);margin-bottom:12px;display:flex;align-items:center;justify-content:center}
+.art img{width:100%;height:100%;object-fit:cover}
+.art .ph svg{width:44%;height:44%;color:var(--faint)}
+.card .fab{position:absolute;right:8px;bottom:8px;width:46px;height:46px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;opacity:0;transform:translateY(8px);transition:.2s;box-shadow:0 8px 16px rgba(0,0,0,.4)}
+.card .fab svg{width:20px;height:20px}
+.card:hover .fab,.card.now .fab{opacity:1;transform:none}
+.card .fv{position:absolute;left:8px;top:8px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;color:#fff;opacity:0;transition:.2s}
+.card:hover .fv,.card .fv.on{opacity:1}.card .fv.on{color:var(--accent)}.card .fv svg{width:15px;height:15px}
+.card .n{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .m{font-size:13px;color:var(--dim);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card.now .n{color:var(--accent)}
+/* list rows (tracklist style) */
+.list .lr{display:grid;grid-template-columns:36px 1fr 160px 90px 44px;align-items:center;gap:14px;padding:8px 14px;border-radius:6px;cursor:pointer;color:var(--dim)}
+.list .lr:hover{background:var(--hover)}
+.list .lr .idx{text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+.list .lr .tt{display:flex;align-items:center;gap:12px;min-width:0}
+.list .lr .tt img,.list .lr .tt .ph{width:42px;height:42px;border-radius:4px;object-fit:cover;background:var(--hover);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.list .lr .tt .ph svg{width:20px;height:20px;color:var(--faint)}
+.list .lr .tt .n{color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .lr .tt .s{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .lr .cn,.list .lr .br{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list .lr .fv{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.list .lr .fv svg{width:16px;height:16px}.list .lr .fv.on{color:var(--accent)}
+.list .lr.now .tt .n{color:var(--accent)}
+.list .lh{display:grid;grid-template-columns:36px 1fr 160px 90px 44px;gap:14px;padding:6px 14px;border-bottom:1px solid var(--line);font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.list .lh span:first-child{text-align:center}
+/* category tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.tile{aspect-ratio:1.6;border-radius:var(--r);padding:16px;position:relative;overflow:hidden;text-align:left;font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;color:#fff;transition:.15s}
+.tile:hover{transform:scale(1.02)}
+.tile small{position:absolute;left:16px;bottom:14px;font:500 12px Inter;opacity:.85}
+.tile .deco{position:absolute;right:-14px;bottom:-14px;width:84px;height:84px;border-radius:12px;background:rgba(0,0,0,.25);transform:rotate(22deg)}
+/* header for a collection */
+.chead{display:flex;align-items:flex-end;gap:22px;padding:20px 0 22px}
+.chead .big{width:180px;height:180px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:64px;box-shadow:0 12px 40px rgba(0,0,0,.5);flex-shrink:0;color:#fff}
+.chead .big svg{width:80px;height:80px}
+.chead .k{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.chead h1{font-size:44px;font-weight:800;letter-spacing:-1px;line-height:1.05;margin:6px 0 10px}
+.chead .d{color:var(--dim);font-size:14px}
+.actions{display:flex;align-items:center;gap:20px;margin:6px 0 22px}
+.playall{width:56px;height:56px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 16px rgba(0,0,0,.4);transition:.15s}
+.playall:hover{transform:scale(1.05)}.playall svg{width:24px;height:24px}
+.ghost{padding:8px 18px;border-radius:999px;border:1px solid var(--faint);color:var(--dim);font-weight:600;font-size:13px}
+.ghost:hover{border-color:var(--text);color:var(--text)}
+.ghost.on{border-color:var(--accent);color:var(--accent)}
+.seg{display:inline-flex;gap:8px;flex-wrap:wrap;margin:10px 0 18px}
+.seg button{padding:7px 14px;border-radius:999px;background:var(--hover);color:var(--text);font-size:13px;font-weight:600}
+.seg button.active{background:var(--text);color:var(--bg)}
+.loadmore{display:block;margin:22px auto 0;padding:10px 24px;border-radius:999px;border:1px solid var(--faint);font-weight:600}
+.loadmore:hover{border-color:var(--text)}
+.state{padding:50px 0;text-align:center;color:var(--faint);font-size:14px}
+.spin{width:22px;height:22px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* countries */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cbtn{display:flex;align-items:center;gap:12px;padding:12px;background:var(--panel2);border-radius:6px;text-align:left}
+.cbtn:hover{background:var(--hover)}
+.cbtn .fl{font-size:26px;line-height:1}
+.cbtn .cn{font-weight:600;font-size:14px}.cbtn .cc{font-size:12px;color:var(--faint)}
+.filter{width:100%;max-width:420px;height:40px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:0 14px;outline:0;margin-bottom:16px}
 /* settings */
-.settings-block{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
-.settings-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);}
-.settings-row:last-child{border-bottom:none;}
-.settings-row .label{font-size:13.5px;font-weight:600;}
-.settings-row .desc{font-size:11.5px;color:var(--text-faint);margin-top:2px;}
-.settings-vol{display:flex;align-items:center;gap:10px;width:140px;}
-.danger-btn{background:rgba(255,95,109,.12);color:var(--coral);padding:8px 15px;border-radius:999px;font-size:12.5px;font-weight:700;}
-.seg-group{display:flex;gap:8px;}
-.seg-btn{padding:8px 18px;border-radius:999px;background:var(--card-hover);border:1px solid var(--line);font-size:12.5px;font-weight:700;color:var(--text-dim);}
-.seg-btn.active{background:var(--grad);color:#0A0C10;border-color:transparent;}
-.swatch-row{display:flex;gap:11px;flex-wrap:wrap;}
-.swatch{width:32px;height:32px;border-radius:50%;border:2px solid transparent;transition:transform .15s,border-color .15s;}
-.swatch.active{border-color:var(--text);transform:scale(1.1);}
-.about-card{padding:20px;}
-.about-card .brand-mark{width:44px;height:44px;font-size:19px;border-radius:13px;margin-bottom:12px;}
-.about-card h3{font-size:17px;margin-bottom:6px;}
-.about-card p{font-size:12.5px;color:var(--text-dim);line-height:1.6;margin-bottom:4px;}
-.about-card .credit{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--text-faint);}
-.about-card .credit b{color:var(--text-dim);}
+.set{max-width:760px}
+.set h2{font-size:22px;margin:22px 0 8px}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line)}
+.srow .l{font-weight:600;font-size:15px}.srow .d{font-size:13px;color:var(--dim);margin-top:2px}
+.sw{position:relative;width:46px;height:26px;border-radius:999px;background:var(--hover);transition:.2s;flex-shrink:0}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.sw.on{background:var(--accent)}.sw.on::after{left:23px}
+.dropdown{height:36px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:0 10px}
+.dangr{padding:8px 16px;border-radius:999px;border:1px solid var(--faint);font-weight:600;font-size:13px;color:var(--dim)}
+.dangr:hover{border-color:#f15e6c;color:#f15e6c}
+.kbd{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px 24px;font-size:13px;color:var(--dim)}
+kbd{background:var(--hover);border-radius:4px;padding:2px 7px;font:12px ui-monospace,monospace;color:var(--text)}
+/* player */
+.player{grid-column:1/-1;background:var(--bg);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 16px;gap:16px;border-top:1px solid var(--line)}
+.pl{display:flex;align-items:center;gap:12px;min-width:0}
+.pl .a{width:56px;height:56px;border-radius:6px;background:var(--hover);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.pl .a img{width:100%;height:100%;object-fit:cover}.pl .a svg{width:24px;height:24px;color:var(--faint)}
+.pl .t{min-width:0}.pl .n{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}.pl .n:hover{text-decoration:underline}
+.pl .s{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+.pl .fv{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--dim)}
+.pl .fv.on{color:var(--accent)}.pl .fv svg{width:16px;height:16px}
+.pc{display:flex;flex-direction:column;align-items:center;gap:6px}
+.pc .btns{display:flex;align-items:center;gap:18px}
+.pc .btns button{color:var(--dim);display:flex;align-items:center;justify-content:center;width:32px;height:32px}
+.pc .btns button:hover{color:var(--text)}
+.pc .btns button svg{width:18px;height:18px}
+.pc .btns button.on{color:var(--accent)}
+.pc .play{width:36px;height:36px;border-radius:50%;background:var(--text);color:var(--bg)!important;transition:.15s}
+.pc .play:hover{transform:scale(1.06)}
+.pc .play svg{width:16px;height:16px}
+.pc .play .spin{width:16px;height:16px;border-width:2px;margin:0;border-color:rgba(0,0,0,.2);border-top-color:#000}
+.pc .live{font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px;letter-spacing:.08em;text-transform:uppercase}
+.live .dot{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.player.playing .live .dot{background:var(--accent);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.pr{display:flex;align-items:center;justify-content:flex-end;gap:10px}
+.pr button{width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--dim)}
+.pr button:hover{color:var(--text)}.pr button.on{color:var(--accent)}
+.pr button svg{width:18px;height:18px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--text) var(--p,80%),var(--hover) var(--p,80%));outline:0;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--text);opacity:0}
+input[type=range]:hover::-webkit-slider-thumb{opacity:1}
+input[type=range]:hover{background:linear-gradient(90deg,var(--accent) var(--p,80%),var(--hover) var(--p,80%))}
+.pr input{width:100px}
+.timer-badge{font-size:11px;color:var(--accent);font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+/* full now playing */
+.np{position:fixed;inset:0;z-index:50;background:var(--panel);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.np.open{transform:none}
+.np .cl{position:absolute;top:18px;left:18px}
+.np .kind{position:absolute;top:26px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.np .na{width:min(72vw,340px);aspect-ratio:1;border-radius:12px;background:var(--hover);overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.np .na img{width:100%;height:100%;object-fit:cover}.np .na svg{width:40%;height:40%;color:var(--faint)}
+.np .nn{font-family:'Plus Jakarta Sans';font-size:26px;font-weight:800;text-align:center;letter-spacing:-.5px;max-width:90vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.np .ns{color:var(--dim);text-align:center;margin-top:-14px}
+.np .nb{display:flex;align-items:center;gap:26px}
+.np .nb button{color:var(--dim);width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.np .nb button svg{width:26px;height:26px}.np .nb button.on{color:var(--accent)}
+.np .nb .play{width:72px;height:72px;border-radius:50%;background:var(--text);color:var(--bg)}
+.np .nb .play svg{width:30px;height:30px}
+.np .nv{display:flex;align-items:center;gap:12px;width:min(80vw,320px)}
+.np .nv input{flex:1}.np .nv svg{width:18px;height:18px;color:var(--dim)}
+/* toast + mobile nav */
+.toast{position:fixed;left:50%;bottom:calc(var(--player) + 18px);transform:translate(-50%,20px);background:var(--accent);color:#000;padding:10px 18px;border-radius:6px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:60;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.mnav{display:none}
+@media(max-width:900px){
+  :root{--player:66px}
+  .app{grid-template-columns:1fr;grid-template-rows:1fr auto;padding:0;gap:0}
+  .side{display:none}.main{border-radius:0;padding-bottom:var(--mnav)}
+  .topbar{padding:12px 14px}.content{padding:6px 14px 30px}
+  .hist{display:none}
+  .player{grid-template-columns:1fr auto;padding:0 12px;position:relative}
+  .pr{display:none}.pc .live{display:none}
+  .pc .btns{gap:6px}.pc .btns .skip{display:none}
+  .pl .a{width:44px;height:44px}
+  .mnav{display:grid;grid-template-columns:repeat(4,1fr);position:fixed;left:0;right:0;bottom:var(--player);height:var(--mnav);background:var(--bg);border-top:1px solid var(--line);z-index:20}
+  .mnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--faint);font-size:10px;font-weight:600}
+  .mnav button svg{width:22px;height:22px}.mnav button.active{color:var(--text)}
+  .list .lr,.list .lh{grid-template-columns:28px 1fr 44px}.list .cn,.list .br,.list .lh span:nth-child(3),.list .lh span:nth-child(4){display:none}
+  .chead{flex-direction:column;align-items:flex-start;gap:14px}.chead .big{width:140px;height:140px}.chead h1{font-size:32px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+  .toast{bottom:calc(var(--player) + var(--mnav) + 14px)}
+}
 
-@media (min-width:900px){
-  .sidebar{display:flex;}
-  .mobile-brand{display:none;}
-  .mobile-nav{display:none;}
-  .main{padding-bottom:calc(var(--player-h) + 30px);}
-  .player{left:236px;bottom:0;}
-  .p-vol{display:flex;}
-  .view{padding:26px 34px 8px;}
-  .topbar-inner{padding:16px 34px;}
+/* ===== v2.1: mavi kavisli navigasyon + oynatıcı ===== */
+:root{--nav:#1d4ed8;--nav2:#2563eb;--navtxt:#dbeafe;--pbg:#0b1c3d;--pbg2:#12285a}
+body.light{--pbg:#1e3a8a;--pbg2:#1d4ed8}
+.side{border-radius:22px}
+.nav{padding:8px 12px}
+.nav button{border-radius:999px;padding:11px 16px}
+.nav button:hover{background:rgba(37,99,235,.18);color:#fff}
+.nav button.active{background:var(--nav);color:#fff}
+body.light .nav button.active{color:#fff}
+.brand .logo{background:var(--nav);color:#fff}
+.brand .logo svg circle{fill:#93c5fd}
+.main{border-radius:22px}
+.player{background:var(--pbg);border:0;border-radius:22px;padding:0 20px;color:#fff;margin-bottom:8px;position:relative;overflow:hidden}
+.player::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--nav2)}
+.player .pl .a{background:var(--pbg2);border-radius:12px}
+.player .pl .s,.player .pc .btns button,.player .pr button,.player .pl .fv{color:#bfdbfe}
+.player .pc .btns button:hover,.player .pr button:hover{color:#fff}
+.player .pc .btns button.on,.player .pr button.on,.player .pl .fv.on{color:#fff}
+.player .pc .play{background:#fff;color:var(--nav)!important;width:44px;height:44px}
+.player .pc .play svg{width:18px;height:18px}
+.player .pc .btns{gap:22px}
+.player .pc .btns button{width:38px;height:38px;border-radius:50%}
+.player .pc .btns button:hover{background:rgba(255,255,255,.12)}
+.player .pc .live{color:#93c5fd}
+.player .pr input[type=range]{background:linear-gradient(90deg,#fff var(--p,80%),rgba(255,255,255,.22) var(--p,80%))}
+.player .pr input[type=range]::-webkit-slider-thumb{background:#fff}
+.player .timer-badge{background:var(--nav2);color:#fff}
+@media(max-width:900px){
+  :root{--player:84px;--mnav:64px}
+  .app{grid-template-rows:1fr}
+  .main{border-radius:0;padding-bottom:calc(var(--player) + var(--mnav) + 20px)}
+  .player{position:fixed;left:10px;right:10px;bottom:calc(var(--mnav) + 8px);height:var(--player);margin:0;border-radius:20px;padding:0 14px;grid-template-columns:1fr auto;gap:8px;z-index:21;box-shadow:0 8px 30px rgba(0,0,0,.45)}
+  .player .pc .btns{gap:6px}.player .pc .btns .skip{display:none}
+  .player .pc .play{width:42px;height:42px}
+  .player .pc .btns button{width:36px;height:36px}
+  .player .pl .a{width:52px;height:52px}
+  .mnav{bottom:0;height:var(--mnav);background:var(--nav);border:0;border-radius:24px 24px 0 0;padding:6px 8px 0;box-shadow:0 -6px 24px rgba(29,78,216,.35)}
+  .mnav button{color:var(--navtxt);border-radius:16px;margin:0 4px;transition:.15s}
+  .mnav button.active{color:var(--nav);background:#fff}
+  .toast{bottom:calc(var(--player) + var(--mnav) + 22px)}
 }
-@media (max-width:899px){
-  .p-info{width:auto;}
-  .p-fav{display:none;}
-}
+
+.credit{padding:10px 16px 14px;font-size:11px;line-height:1.4;color:var(--faint);border-top:1px solid var(--line)}
+@media(max-width:900px){.credit-row .d{font-size:12px}}
+/* ===== spektrum (kapak üstünde) ===== */
+.pl .a,.np .na{position:relative}
+.cviz{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.pl .a .cviz{cursor:pointer;pointer-events:auto}
+.meme{position:absolute;inset:0;z-index:3;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding:3px}
+.meme span{display:none}
+.meme.show span{display:block;background:rgba(0,0,0,.72);color:#fff;font-family:'Plus Jakarta Sans',Inter,sans-serif;font-weight:800;font-size:9px;line-height:1.15;padding:2px 5px;border-radius:5px;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:memePop .35s ease}
+.meme.big.show span{font-size:clamp(16px,3.4vw,26px);padding:8px 16px;border-radius:12px;white-space:normal;border:2px solid #fff;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.meme.top{align-items:flex-start}
+.meme.tr.show span{background:#e30a17;border-color:#fff}
+.meme.nazar.show span{background:#0d47a1;border-color:#fff}
+.meme.cay.show span{background:#5d2a0a;border-color:#f6d5a8}
+@keyframes memePop{from{transform:scale(.6) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
+.np .na.dim img{filter:brightness(.55)}
+
+.viz-off .cviz{display:none}
+#vizColor input[type=color]{width:34px;height:34px;border:0;background:none;padding:0;cursor:pointer;border-radius:8px}
 </style>
 </head>
 <body>
-
-<div id="app">
-
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-mark">S</div>
-      <div class="brand-text">
-        <div class="name">SUQOO</div>
-        <div class="slogan">Dünyanın sesi, tek yerde.</div>
-      </div>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h16v11H4z M6 5l12-2v3H6z"/><circle cx="16" cy="14.5" r="2.5" fill="#1ED760"/></svg></span>SUQOO</div>
+    <nav class="nav" id="sideNav"></nav>
+    <div class="lib">
+      <h4>Kitaplığın</h4>
+      <div id="libFav"></div>
+      <h4>Son dinlenenler</h4>
+      <div id="libRecent"></div>
     </div>
-    <nav class="side-nav" id="sideNav"></nav>
-    <div class="side-foot">
-      <div class="dev">SUQOO — <b>CodeBug</b> yapımıdır<br>Geliştirici: <b>Hakan Aytaş</b></div>
-    </div>
+    <div class="credit">Hakan Aytaş (Codebug Developer) tarafından tasarlandı · Yardımcı developer: Şükran Aytaş</div>
   </aside>
 
-  <main class="main">
-    <header class="topbar">
-      <div class="topbar-inner">
-        <div class="mobile-brand">
-          <div class="brand-mark">S</div>
-          <div class="name">SUQOO</div>
-        </div>
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-          <input id="searchInput" type="text" placeholder="Radyo, ülke veya tür ara...">
-          <button class="search-clear" id="searchClear">✕</button>
-        </div>
+  <main class="main" id="main">
+    <div class="topbar">
+      <div class="hist"><button id="backBtn" title="Geri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m15 5-7 7 7 7"/></svg></button></div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="searchInput" placeholder="Radyo, şehir, tür ara…" autocomplete="off">
+        <button class="clr" id="searchClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       </div>
-    </header>
+      <div class="sp"></div>
+      <button class="icon-btn" id="themeBtn" title="Tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg></button>
+      <button class="icon-btn" id="settingsTop" title="Ayarlar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </div>
 
-    <section class="view active" id="view-home">
-      <div class="hero">
-        <h1>İyi dinlemeler.</h1>
-        <p>Dünyanın dört bir yanından binlerce canlı radyo istasyonu, tek dokunuşla.</p>
-      </div>
-      <div class="section">
-        <div class="section-head"><div><div class="section-title">Kategoriler</div></div></div>
-        <div class="chip-grid" id="categoryChips"></div>
-      </div>
-      <div class="section" id="recentSection" style="display:none;">
-        <div class="section-head"><div class="section-title">Son Dinlenenler</div></div>
-        <div class="grid" id="recentGrid"></div>
-      </div>
-      <div class="section">
-        <div class="section-head"><div class="section-title">Popüler Radyolar</div></div>
-        <div class="grid" id="popularGrid"><div class="loading"><div class="spinner"></div>Yükleniyor...</div></div>
-      </div>
-    </section>
+    <div class="content">
+      <!-- HOME -->
+      <section class="view active" id="view-home">
+        <div class="hero"><h1 id="greet">İyi günler</h1></div>
+        <div class="sec" id="recentSec" style="display:none"><div class="sec-h"><h2>Kaldığın yerden devam et</h2><button class="more" data-go="library">Tümünü gör</button></div><div class="grid" id="recentGrid"></div></div>
+        <div class="sec"><div class="sec-h"><h2>Türkiye'de popüler</h2><button class="more" data-country="Turkey">Tümünü gör</button></div><div class="grid" id="trGrid"></div></div>
+        <div class="sec"><div class="sec-h"><h2>Dünyada en çok dinlenen</h2><button class="more" data-top="1">Tümünü gör</button></div><div class="grid" id="topGrid"></div></div>
+        <div class="sec"><div class="sec-h"><h2>Türler</h2><button class="more" data-go="browse">Tümünü gör</button></div><div class="tiles" id="homeTiles"></div></div>
+      </section>
 
-    <section class="view" id="view-discover">
-      <div class="hero"><h1>Keşfet</h1><p>Türe veya ülkeye göre radyo bul.</p></div>
-      <div class="filter-row">
-        <div class="select-wrap">
-          <select id="countrySelect"><option value="">Ülke seç...</option></select>
-        </div>
-      </div>
-      <div class="filter-row" id="tagRow"></div>
-      <div class="section">
-        <div class="section-head"><div class="section-title" id="discoverTitle">Sonuçlar</div></div>
-        <div class="grid" id="discoverGrid"><div class="empty-state">Bir kategori, ülke veya arama seçerek başlayın.</div></div>
-      </div>
-    </section>
+      <!-- BROWSE -->
+      <section class="view" id="view-browse">
+        <div class="hero"><h1>Gözat</h1><p>Türe veya ülkeye göre keşfet.</p></div>
+        <div class="seg" id="browseSeg"><button class="active" data-bs="genres">Türler</button><button data-bs="countries">Ülkeler</button><button data-bs="languages">Diller</button></div>
+        <div id="bsGenres"><div class="tiles" id="genreTiles"></div></div>
+        <div id="bsCountries" style="display:none"><input class="filter" id="countryFilter" placeholder="Ülke ara…"><div class="cgrid" id="countryGrid"><div class="state"><div class="spin"></div>Ülkeler yükleniyor…</div></div></div>
+        <div id="bsLanguages" style="display:none"><input class="filter" id="langFilter" placeholder="Dil ara…"><div class="cgrid" id="langGrid"><div class="state"><div class="spin"></div>Diller yükleniyor…</div></div></div>
+      </section>
 
-    <section class="view" id="view-favorites">
-      <div class="hero"><h1>Favorilerim</h1><p>Kalp ile işaretlediğin istasyonlar burada.</p></div>
-      <div class="grid" id="favGrid"></div>
-    </section>
+      <!-- COLLECTION (results) -->
+      <section class="view" id="view-collection">
+        <div class="chead"><div class="big" id="colArt"></div><div><div class="k" id="colKind">Koleksiyon</div><h1 id="colTitle">—</h1><div class="d" id="colDesc"></div></div></div>
+        <div class="actions"><button class="playall" id="colPlay" title="Hepsini çal"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><button class="ghost" id="colShuffle">Karışık</button><div class="seg" style="margin:0"><button class="active" data-vm="list">Liste</button><button data-vm="grid">Kartlar</button></div></div>
+        <div id="colBody"></div>
+        <button class="loadmore" id="colMore" style="display:none">Daha fazla yükle</button>
+      </section>
 
-    <section class="view" id="view-settings">
-      <div class="hero"><h1>Ayarlar</h1></div>
+      <!-- LIBRARY -->
+      <section class="view" id="view-library">
+        <div class="hero"><h1>Kitaplığın</h1><p>Favorilerin ve dinleme geçmişin.</p></div>
+        <div class="seg"><button class="active" data-lt="fav">Favoriler</button><button data-lt="recent">Son dinlenenler</button></div>
+        <div class="actions" style="margin-top:0"><button class="playall" id="libPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button><button class="ghost" id="libClear">Temizle</button></div>
+        <div id="libBody"></div>
+      </section>
 
-      <div class="settings-block">
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
-          <div><div class="label">Tema</div><div class="desc">Arka planı açık veya koyu yap</div></div>
-          <div class="seg-group" id="themeButtons"></div>
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="set">
+          <div class="hero"><h1>Ayarlar</h1></div>
+          <h2>Oynatma</h2>
+          <div class="srow"><div><div class="l">Sessiz yayınları otomatik atla</div><div class="d">8 saniye içinde ses gelmezse bir sonraki istasyona geç</div></div><button class="sw on" id="swSkip"></button></div>
+          <div class="srow"><div><div class="l">Sadece test edilmiş istasyonlar</div><div class="d">Sunucu tarafında bozuk işaretlenen yayınları gizle (hidebroken)</div></div><button class="sw on" id="swBroken"></button></div>
+          <div class="srow"><div><div class="l">Otomatik devam</div><div class="d">Uygulama açıldığında son istasyonu hazırla</div></div><button class="sw on" id="swResume"></button></div>
+          <div class="srow"><div><div class="l">Ses seviyesi</div><div class="d">Varsayılan ses düzeyi</div></div><input type="range" id="setVol" min="0" max="100" value="80" style="width:160px"></div>
+          <div class="srow"><div><div class="l">Uyku zamanlayıcı</div><div class="d">Belirlenen süre sonunda yayını durdur</div></div><select class="dropdown" id="sleepSel"><option value="0">Kapalı</option><option value="15">15 dk</option><option value="30">30 dk</option><option value="45">45 dk</option><option value="60">60 dk</option><option value="90">90 dk</option></select></div>
+          <h2>Spektrum (görselleştirici)</h2>
+          <div class="srow"><div><div class="l">Spektrumu göster</div><div class="d">Oynatıcı çubuğunda ve Şimdi Çalıyor ekranında canlı ses dalgası</div></div><button class="sw on" id="swViz"></button></div>
+          <div class="srow"><div><div class="l">Stil</div><div class="d">Çubuk, dalga, ayna veya halka</div></div><div class="seg" style="margin:0" id="vizStyle"><button data-vs="bars" class="active">Çubuk</button><button data-vs="wave">Dalga</button><button data-vs="mirror">Ayna</button><button data-vs="ring">Halka</button></div></div>
+          <div class="srow"><div><div class="l">Renk</div><div class="d">Vurgu rengi, mavi, Türkiye (kırmızı-beyaz), gökkuşağı veya kendi rengin</div></div><div class="seg" style="margin:0;flex-wrap:wrap" id="vizColor"><button data-vc="accent" class="active">Vurgu</button><button data-vc="blue">Mavi</button><button data-vc="tr">Türkiye</button><button data-vc="rainbow">Gökkuşağı</button><button data-vc="custom">Özel</button><input type="color" id="vizCustom" value="#ff4d6d" title="Özel renk"></div></div>
+          <div class="srow"><div><div class="l">Hassasiyet</div><div class="d">Çubukların ne kadar hareketli olacağı</div></div><input type="range" id="vizSens" min="20" max="100" value="60" style="width:160px"></div>
+          <div class="srow"><div><div class="l">Çubuk sayısı</div><div class="d" id="vizBarsTxt">32 çubuk</div></div><input type="range" id="vizBars" min="8" max="96" step="8" value="32" style="width:160px"></div>
+          <div class="srow"><div><div class="l">Kapak görselini karart</div><div class="d">Spektrum kapak üzerinde daha net görünsün</div></div><button class="sw on" id="swVizBg"></button></div>
+          <div class="srow"><div><div class="l">Opaklık</div><div class="d">Kapak üstündeki spektrumun saydamlığı</div></div><input type="range" id="vizAlpha" min="20" max="100" value="85" style="width:160px"></div>
+          <h2>Kapak etiketleri (Türkiye mizahı)</h2>
+          <div class="srow"><div><div class="l">Kapakta komik etiket göster</div><div class="d">Oynatıcı ve Şimdi Çalıyor kapağına dönen komik yazılar</div></div><button class="sw on" id="swMeme"></button></div>
+          <div class="srow"><div><div class="l">Paket</div><div class="d">Hazır set seç veya kendi listeni yaz</div></div><div class="seg" style="margin:0;flex-wrap:wrap" id="memePack"><button data-mp="tr" class="active">Türkiye klasikleri</button><button data-mp="cay">Çaycı</button><button data-mp="nazar">Nazar</button><button data-mp="custom">Özel</button></div></div>
+          <div class="srow"><div><div class="l">Konum</div><div class="d">Etiket kapağın neresinde dursun</div></div><div class="seg" style="margin:0" id="memePos"><button data-mpos="bottom" class="active">Alt</button><button data-mpos="top">Üst</button></div></div>
+          <div class="srow"><div><div class="l">Değişim süresi</div><div class="d" id="memeEveryTxt">Her 8 saniyede</div></div><input type="range" id="memeEvery" min="3" max="30" value="8" style="width:160px"></div>
+          <div class="srow" style="flex-direction:column;align-items:stretch;gap:8px"><div><div class="l">Özel etiketler</div><div class="d">Her satıra bir yazı; emoji de kullanabilirsin</div></div><textarea id="memeCustom" class="dropdown" rows="4" style="height:auto;resize:vertical;width:100%;font-family:inherit" placeholder="Oha be radyo!&#10;Çaylar benden 🫖"></textarea></div>
+          <h2>Görünüm</h2>
+          <div class="srow"><div><div class="l">Tema</div><div class="d">Koyu veya açık</div></div><div class="seg" style="margin:0"><button data-th="dark" class="active">Koyu</button><button data-th="light">Açık</button></div></div>
+          <div class="srow"><div><div class="l">Vurgu rengi</div><div class="d">Oynat düğmeleri ve vurgular</div></div><div class="seg" style="margin:0" id="accents"></div></div>
+          <h2>Veri</h2>
+          <div class="srow"><div><div class="l">Favorileri temizle</div><div class="d" id="favCount">0 istasyon</div></div><button class="dangr" id="clearFav">Temizle</button></div>
+          <div class="srow"><div><div class="l">Geçmişi temizle</div><div class="d" id="recCount">0 istasyon</div></div><button class="dangr" id="clearRec">Temizle</button></div>
+          <div class="srow"><div><div class="l">Bu oturumda atlanan istasyonlar</div><div class="d" id="skipCount">0 istasyon</div></div><button class="dangr" id="clearSkip">Sıfırla</button></div>
+          <div class="srow credit-row"><div><div class="l">Hakkında</div><div class="d">SUQOO Radio v2 · Hakan Aytaş (Codebug Developer) tarafından tasarlandı · Yardımcı developer: Şükran Aytaş</div></div></div>
+          <div class="srow"><div><div class="l">API sunucusu</div><div class="d" id="apiInfo">radio-browser.info</div></div><button class="ghost" id="reconnect">Yeniden bağlan</button></div>
+          <h2>Klavye kısayolları</h2>
+          <div class="kbd"><div><kbd>Boşluk</kbd> Oynat / Duraklat</div><div><kbd>→</kbd> Sonraki</div><div><kbd>←</kbd> Önceki</div><div><kbd>↑</kbd> <kbd>↓</kbd> Ses</div><div><kbd>M</kbd> Sessiz</div><div><kbd>F</kbd> Favori</div><div><kbd>/</kbd> Ara</div><div><kbd>Esc</kbd> Kapat</div></div>
+          <p style="color:var(--faint);font-size:12px;margin:26px 0 10px">SUQOO v2 — CodeBug yapımıdır. Geliştirici: Hakan Aytaş. Veri: radio-browser.info</p>
         </div>
-        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
-          <div><div class="label">Vurgu rengi</div><div class="desc">Uygulama genelindeki renk tonunu seç</div></div>
-          <div class="swatch-row" id="accentSwatches"></div>
-        </div>
-      </div>
-
-      <div class="settings-block">
-        <div class="settings-row">
-          <div><div class="label">Varsayılan ses seviyesi</div><div class="desc">Uygulama açıldığında kullanılacak ses düzeyi</div></div>
-          <div class="settings-vol">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
-            <input type="range" id="settingsVol" min="0" max="100" value="80">
-          </div>
-        </div>
-        <div class="settings-row">
-          <div><div class="label">Bozuk yayınları filtrele</div><div class="desc">Sadece çalışır durumda test edilmiş istasyonları göster</div></div>
-          <input type="checkbox" id="hideBrokenToggle" checked style="width:18px;height:18px;accent-color:var(--gold);">
-        </div>
-        <div class="settings-row">
-          <div><div class="label">Ses gelmeyen yayını atla</div><div class="desc">Yayın 8 sn içinde ses vermezse listeden kaldır ve sonrakine geç</div></div>
-          <input type="checkbox" id="autoSkipToggle" checked style="width:18px;height:18px;accent-color:var(--gold);">
-        </div>
-        <div class="settings-row">
-          <div><div class="label">Favorileri temizle</div><div class="desc" id="favCountDesc">0 istasyon kayıtlı</div></div>
-          <button class="danger-btn" id="clearFavBtn">Temizle</button>
-        </div>
-        <div class="settings-row">
-          <div><div class="label">Son dinlenenleri temizle</div><div class="desc" id="recentCountDesc">0 istasyon kayıtlı</div></div>
-          <button class="danger-btn" id="clearRecentBtn">Temizle</button>
-        </div>
-      </div>
-
-      <div class="settings-block about-card">
-        <div class="brand-mark">S</div>
-        <h3>SUQOO</h3>
-        <p>Dünyanın sesi, tek yerde. Radio Browser topluluk veritabanı üzerinden binlerce gerçek internet radyosuna anında erişim sağlar.</p>
-        <p>Sürüm 1.1 · Kısayollar: Boşluk oynat/durdur, ← → önceki/sonraki, M sessiz</p>
-        <div class="credit">SUQOO — <b>CodeBug</b> yapımıdır.<br>Geliştirici: <b>Hakan Aytaş</b></div>
-      </div>
-    </section>
+      </section>
+    </div>
   </main>
 
   <!-- PLAYER -->
   <div class="player" id="player">
-    <div class="p-art" id="pArt"><div class="fallback-emoji">📻</div></div>
-    <div class="p-info">
-      <div class="p-name" id="pName">İstasyon seçilmedi</div>
-      <div class="p-sub"><span id="pSub">—</span></div>
+    <div class="pl">
+      <div class="a" id="pArt"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h16v11H4z M6 5l12-2v3H6z"/></svg><canvas class="cviz" id="pViz"></canvas><div class="meme" id="pMeme"></div></div>
+      <div class="t"><div class="n" id="pName">İstasyon seçilmedi</div><div class="s" id="pSub">Bir istasyon seç ve dinlemeye başla</div></div>
+      <button class="fv" id="pFav" title="Favori"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg></button>
     </div>
-    <div class="p-controls">
-      <button class="p-fav" id="pFav" title="Favorilere ekle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg>
-      </button>
-      <button class="p-skip" id="pPrev" title="Önceki">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg>
-      </button>
-      <button class="p-play" id="pPlay" title="Oynat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="p-skip" id="pNext" title="Sonraki">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
-      </button>
-      <div class="p-vol">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
-        <input type="range" id="pVol" min="0" max="100" value="80">
+    <div class="pc">
+      <div class="btns">
+        <button class="skip" id="pShuffle" title="Karışık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+        <button id="pPrev" title="Önceki"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="play" id="pPlay" title="Oynat"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        <button id="pNext" title="Sonraki"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+        <button class="skip" id="pStop" title="Durdur"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
       </div>
-      <button class="p-stop" id="pStop" title="Durdur">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
+      <div class="live"><span class="dot"></span><span id="liveTxt">Canlı yayın</span></div>
+    </div>
+    <div class="pr">
+      <span class="timer-badge" id="timerBadge"></span>
+      <button id="pSleep" title="Uyku zamanlayıcı"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></button>
+      <button id="pExpand" title="Tam ekran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg></button>
+      <button id="pMute" title="Sessiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+      <input type="range" id="pVol" min="0" max="100" value="80">
     </div>
   </div>
-
-  <!-- EXPANDED NOW PLAYING -->
-  <div class="np-overlay" id="npOverlay">
-    <div class="np-handle" id="npClose"></div>
-    <div class="np-top">
-      <button class="np-collapse" id="npCollapseBtn" title="Küçült">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <div class="np-top-label">Şimdi Çalıyor</div>
-      <div style="width:34px"></div>
-    </div>
-    <div class="np-art-wrap"><div class="np-art" id="npArt"><div class="fallback-emoji">📻</div></div></div>
-    <div class="np-info">
-      <div class="np-name" id="npName">İstasyon seçilmedi</div>
-      <div class="np-sub"><span class="wave"><span></span><span></span><span></span></span> <span id="npSub">—</span></div>
-    </div>
-    <div class="np-controls">
-      <button class="np-fav" id="npFav" title="Favorilere ekle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg>
-      </button>
-      <button class="np-skip" id="npPrev" title="Önceki">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zM9.5 12l8.5 6V6z"/></svg>
-      </button>
-      <button class="np-play" id="npPlay" title="Oynat">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="np-skip" id="npNext" title="Sonraki">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
-      </button>
-      <button class="np-stop" id="npStop" title="Durdur">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="np-vol">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
-      <input type="range" id="npVol" min="0" max="100" value="80">
-    </div>
-    <div class="np-queue" id="npQueue"></div>
-  </div>
-
-  <nav class="mobile-nav" id="mobileNav"></nav>
+  <nav class="mnav" id="mnav"></nav>
 </div>
 
+<!-- FULL NOW PLAYING -->
+<div class="np" id="np">
+  <button class="icon-btn cl" id="npClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg></button>
+  <div class="kind">Şimdi çalıyor</div>
+  <div class="na" id="npArt"><canvas class="cviz" id="npViz"></canvas><div class="meme big" id="npMeme"></div></div>
+  <div class="nn" id="npName">—</div>
+  <div class="ns" id="npSub">—</div>
+  <div class="nb">
+    <button id="npFav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg></button>
+    <button id="npPrev"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+    <button class="play" id="npPlay"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+    <button id="npNext"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    <button id="npStop"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></button>
+  </div>
+  <div class="nv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4V5z"/></svg><input type="range" id="npVol" min="0" max="100" value="80"></div>
+</div>
 <div class="toast" id="toast"></div>
 <audio id="audio" preload="none"></audio>
 
 <script>
 (function(){
 "use strict";
+const MIRRORS=["https://de1.api.radio-browser.info","https://de2.api.radio-browser.info","https://at1.api.radio-browser.info","https://nl1.api.radio-browser.info","https://fi1.api.radio-browser.info"];
+let base=null;
+const $=id=>document.getElementById(id);
+const load=(k,d)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-/* ---------------- emoji app icon (home screen / desktop shortcut) ---------------- */
-(function setupIcons(){
-  try{
-    const c = document.createElement('canvas'); c.width = 512; c.height = 512;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#0A0C10'; ctx.fillRect(0,0,512,512);
-    ctx.font = '340px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('📻', 256, 276);
-    const png = c.toDataURL('image/png');
-    document.getElementById('appleIcon').href = png;
-    const manifest = {
-      name:'SUQOO Radio', short_name:'SUQOO', start_url:'.', display:'standalone',
-      background_color:'#0A0C10', theme_color:'#0A0C10',
-      icons:[{src:png, sizes:'512x512', type:'image/png'}]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
-    document.getElementById('manifestLink').href = URL.createObjectURL(blob);
-  }catch(e){}
-})();
-
-/* ---------------- config ---------------- */
-const MIRRORS = [
-  "https://de1.api.radio-browser.info",
-  "https://de2.api.radio-browser.info",
-  "https://at1.api.radio-browser.info",
-  "https://nl1.api.radio-browser.info"
-];
-let activeBase = null;
-
-const NAV_ICONS = {
-  home:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
-  compass:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></svg>',
-  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg>',
-  gear:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.8 7.8 0 0 0-1.8-1l-.3-2.5H9l-.3 2.5a7.8 7.8 0 0 0-1.8 1l-2.3-.9-2 3.4L4.6 11a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.3-.9c.5.4 1.1.8 1.8 1l.3 2.5h4.6l.3-2.5c.7-.2 1.3-.6 1.8-1l2.3.9 2-3.4Z"/></svg>'
+/* ---- state ---- */
+let favorites=load('sq_fav',[]),recent=load('sq_recent',[]);
+let volume=load('sq_vol',80),muted=false,theme=load('sq_theme','dark'),accent=load('sq_accent','#1ED760');
+let viz=load('sq_viz',{on:true,style:'bars',color:'accent',custom:'#ff4d6d',sens:60,bars:32,bg:true,alpha:85});
+const MEMES={
+ tr:['Oha be radyo! 😮','Yok artık Dumbledore','Şok şok şok! 📻','Bu ne ya, efsane!','Aynen aynen 🙃','Hadi ordan 😏','Kral parça geldi 👑','Bak şimdi… 🤌','Nerdesin be radyo?','Hoca, bir dakika 🤚','Vay be, ne parça!','Abi bu radyo başka','Sesi aç komşu duysun 🔊','Yeme beni 🤣','Dur bakalım hocam','Yakışıyor mu? Yakışıyor.','Bittim ben 😂','Bu yayın koptu 🕺','Ne oldu bize böyle 😩','Off çok iyi ya 😍','Bir daha çal reis 🔁','Taksici radyosu vibes 🚕'],
+ cay:['Çaylar benden 🫖','Demli olsun ☕','Tavşan kanı 🐇','Bir bardak daha? ☕','Çay olmadan olmaz','Simit + çay + radyo 🥯','Açık mı demli mi?','Çaycı Hüseyin nerede?','Bardak boş, doldur 😅','Kıtlama şeker 🍬'],
+ nazar:['Nazar değmesin 🧿','Maşallah bu sese 🧿','Tuu tuu 🧿','Kem gözlere şiş 🧿','Kırk bir kere maşallah','Allah nazardan korusun 🧿','Bu radyo nazarlık 🧿','Çıtır çıtır maşallah'],
 };
-
-const NAV_ITEMS = [
-  {id:'home', label:'Ana Sayfa', icon:NAV_ICONS.home},
-  {id:'discover', label:'Keşfet', icon:NAV_ICONS.compass},
-  {id:'favorites', label:'Favoriler', icon:NAV_ICONS.heart},
-  {id:'settings', label:'Ayarlar', icon:NAV_ICONS.gear}
+let memeTimer=null;
+let meme=load('sq_meme',{on:true,pack:'tr',pos:'bottom',every:8,custom:''});
+let autoSkip=load('sq_skip',true),hideBroken=load('sq_hb',true),resume=load('sq_resume',true);
+let current=null,queue=[],qIndex=-1,isPlaying=false,skipTimer=null,sessionSkipped=new Set(),sleepEnd=0,sleepInt=null;
+let colState=null,colMode='list',libTab='fav',histStack=[];
+const GENRES=[
+ {l:'Türkçe Pop',t:'turkish pop',c:'#e8115b'},{l:'Pop',t:'pop',c:'#1e3264'},{l:'Arabesk',t:'arabesk',c:'#8d67ab'},{l:'Rock',t:'rock',c:'#e91429'},
+ {l:'Jazz',t:'jazz',c:'#ba5d07'},{l:'Slow',t:'slow',c:'#477d95'},{l:'Elektronik',t:'electronic',c:'#148a08'},{l:'Haber',t:'news',c:'#503750'},
+ {l:'Klasik',t:'classical',c:'#7d4b32'},{l:'Dance',t:'dance',c:'#dc148c'},{l:'Hip-Hop',t:'hiphop',c:'#bc5900'},{l:'Chill',t:'chillout',c:'#0d73ec'},
+ {l:'Oldies',t:'oldies',c:'#a56752'},{l:'Spor',t:'sports',c:'#27856a'},{l:'Dini',t:'religious',c:'#5f8108'},{l:'Çocuk',t:'kids',c:'#f59b23'},
+ {l:'Latin',t:'latin',c:'#e1118c'},{l:'Metal',t:'metal',c:'#282828'},{l:'Blues',t:'blues',c:'#1d4ed8'},{l:'Lounge',t:'lounge',c:'#8c1932'}
 ];
+const ACCENTS=['#1ED760','#FF5F6D','#FFC24B','#31E1C9','#7C6CF0','#FF8C42'];
+const ICON={home:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>',search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',lib:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h2v16H3zM7 4h2v16H7zM11.5 4.5l7.8 2.1-4.2 14.9-7.8-2.1z"/></svg>',gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',radio:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 9h16v11H4z M6 5l12-2v3H6z"/></svg>',play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',pause:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>',heart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg>',globe:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>'};
+const NAV=[{id:'home',l:'Ana Sayfa',i:ICON.home},{id:'browse',l:'Gözat',i:ICON.search},{id:'library',l:'Kitaplığın',i:ICON.lib},{id:'settings',l:'Ayarlar',i:ICON.gear}];
 
-const CATEGORIES = [
-  {label:'Türkçe', type:'country', value:'Turkey', c1:'#FF5F6D', c2:'#FFC24B'},
-  {label:'Pop', type:'tag', value:'pop', c1:'#7C6CF0', c2:'#31E1C9'},
-  {label:'Arabesk', type:'tag', value:'arabesk', c1:'#B8395B', c2:'#5A2A6B'},
-  {label:'Rock', type:'tag', value:'rock', c1:'#2B2F3A', c2:'#6B7280'},
-  {label:'Jazz', type:'tag', value:'jazz', c1:'#8A5A2A', c2:'#D9A441'},
-  {label:'Slow', type:'tag', value:'slow', c1:'#345B7A', c2:'#6FA3C7'},
-  {label:'Elektronik', type:'tag', value:'electronic', c1:'#1E3A5F', c2:'#31E1C9'},
-  {label:'Haber', type:'tag', value:'news', c1:'#3A3F47', c2:'#8A929E'},
-  {label:'Klasik', type:'tag', value:'classical', c1:'#5A2E2E', c2:'#B87A3E'}
-];
-const DISCOVER_TAGS = ['pop','rock','jazz','arabesk','slow','electronic','news','classical','dance','hiphop','chillout','oldies','türkçe pop','enstrümantal'];
+/* ---- toast ---- */
+let tt;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2400)}
 
-const ACCENTS = {
-  gold:       {name:'Altın – Mercan', c1:'#FFC24B', c2:'#FF5F6D'},
-  yellowBlack:{name:'Sarı – Siyah',   c1:'#FFD400', c2:'#15161A'},
-  yellowWhite:{name:'Sarı – Beyaz',   c1:'#FFD400', c2:'#FFFFFF'},
-  tealPurple: {name:'Turkuaz – Mor',  c1:'#31E1C9', c2:'#7C6CF0'},
-  mono:       {name:'Siyah – Beyaz',  c1:'#F2F0EC', c2:'#8A8F99'}
-};
-
-/* ---------------- state ---------------- */
-let favorites = loadJSON('suqoo_favorites', []);
-let recent = loadJSON('suqoo_recent', []);
-let currentStation = null;
-let isPlaying = false;
-let hideBroken = loadJSON('suqoo_hidebroken', true);
-let autoSkip = loadJSON('suqoo_autoskip', true);
-let volume = loadJSON('suqoo_volume', 80);
-let accentKey = loadJSON('suqoo_accent', 'gold');
-let themeMode = loadJSON('suqoo_theme', 'dark');
-
-/* queue: the list the current station was played from */
-let queue = [];
-let queueIndex = -1;
-/* stations that gave no audio in THIS session (not persisted) */
-const deadThisSession = new Set();
-let playToken = 0;
-let playTimeout = null;
-
-function loadJSON(key, fallback){
-  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
+/* ---- API ---- */
+async function api(path){
+  const bases=base?[base,...MIRRORS.filter(m=>m!==base)]:MIRRORS;let err;
+  for(const b of bases){try{const c=new AbortController();const to=setTimeout(()=>c.abort(),9000);const r=await fetch(b+path,{signal:c.signal});clearTimeout(to);if(!r.ok)throw 0;const d=await r.json();base=b;$('apiInfo').textContent=b.replace('https://','');return d}catch(e){err=e}}
+  throw err||new Error('api');
 }
-function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
+function q(p){const u=new URLSearchParams(p);if(hideBroken)u.set('hidebroken','true');return '/json/stations/search?'+u}
+const clean=l=>(l||[]).filter(s=>s&&(s.url_resolved||s.url)&&s.name).filter((s,i,a)=>a.findIndex(x=>x.stationuuid===s.stationuuid)===i);
+const fetchTop=(limit,offset=0)=>api(q({order:'clickcount',reverse:'true',limit,offset}));
+const fetchBy=(type,val,limit,offset=0)=>api(q({[type]:val,order:'votes',reverse:'true',limit,offset}));
 
-const audio = document.getElementById('audio');
-const $ = id => document.getElementById(id);
-const toastEl = $('toast');
+/* ---- render helpers ---- */
+const isFav=u=>favorites.some(f=>f.stationuuid===u);
+const mini=s=>({stationuuid:s.stationuuid,name:s.name,url:s.url,url_resolved:s.url_resolved,favicon:s.favicon,country:s.country,tags:s.tags,bitrate:s.bitrate,codec:s.codec});
+const meta=s=>[s.country,(s.tags||'').split(',').filter(Boolean).slice(0,2).join(', ')].filter(Boolean).join(' · ')||'Radyo';
+const artImg=(s,cls)=>s.favicon?`<img src="${esc(s.favicon)}" alt="" loading="lazy" onerror="this.outerHTML='<div class=&quot;ph&quot;>${ICON.radio.replace(/"/g,'&quot;')}</div>'">`:`<div class="ph">${ICON.radio}</div>`;
+const isNow=s=>current&&current.stationuuid===s.stationuuid;
 
-let toastTimer = null;
-function showToast(msg){
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>toastEl.classList.remove('show'), 2600);
+function card(s,i){return `<div class="card${isNow(s)?' now':''}" data-i="${i}"><div class="art">${artImg(s)}<button class="fv${isFav(s.stationuuid)?' on':''}" data-fav="${i}">${ICON.heart}</button><button class="fab" data-play="${i}">${isNow(s)&&isPlaying?ICON.pause:ICON.play}</button></div><div class="n">${esc(s.name)}</div><div class="m">${esc(meta(s))}</div></div>`}
+function row(s,i){return `<div class="lr${isNow(s)?' now':''}" data-i="${i}"><div class="idx">${i+1}</div><div class="tt">${artImg(s)}<div><div class="n">${esc(s.name)}</div><div class="s">${esc((s.tags||'').split(',').filter(Boolean).slice(0,3).join(', ')||'—')}</div></div></div><div class="cn">${esc(s.country||'—')}</div><div class="br">${s.bitrate?s.bitrate+' kbps':(s.codec||'')}</div><button class="fv${isFav(s.stationuuid)?' on':''}" data-fav="${i}">${ICON.heart}</button></div>`}
+function renderList(el,list,mode,empty){
+  if(!list.length){el.innerHTML=`<div class="state">${empty||'Sonuç bulunamadı.'}</div>`;return}
+  if(mode==='grid'){el.className='grid';el.innerHTML=list.map(card).join('')}
+  else{el.className='list';el.innerHTML=`<div class="lh"><span>#</span><span>İstasyon</span><span>Ülke</span><span>Kalite</span><span></span></div>`+list.map(row).join('')}
+  el.querySelectorAll('[data-i]').forEach(c=>c.addEventListener('click',()=>playFrom(list,+c.dataset.i)));
+  el.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();toggleFav(list[+b.dataset.fav])}));
+}
+function refreshNowMarks(){document.querySelectorAll('.card,.lr,.lib .row').forEach(el=>{const u=el.dataset.uuid;if(!u)return;el.classList.toggle('now',!!(current&&current.stationuuid===u))})}
+function rerenderAll(){ // cheap: re-run visible renders
+  document.querySelectorAll('.card,.lr').forEach(el=>{const n=el.querySelector('.n');});
+  if(colState)renderList($('colBody'),colState.list,colMode);
+  renderLib();renderHomeCached();
 }
 
-/* ---------------- API ---------------- */
-async function apiFetch(path){
-  const bases = activeBase ? [activeBase, ...MIRRORS.filter(m=>m!==activeBase)] : MIRRORS;
-  let lastErr = null;
-  for(const base of bases){
-    try{
-      const res = await fetch(base + path, {headers:{'Content-Type':'application/json'}});
-      if(!res.ok) throw new Error('bad status');
-      const data = await res.json();
-      activeBase = base;
-      return data;
-    }catch(err){ lastErr = err; }
-  }
-  throw lastErr || new Error('Tüm sunucular başarısız');
+/* ---- favorites / recent ---- */
+function toggleFav(s){const i=favorites.findIndex(f=>f.stationuuid===s.stationuuid);if(i>-1){favorites.splice(i,1);toast('Favorilerden çıkarıldı')}else{favorites.unshift(mini(s));toast('Favorilere eklendi')}save('sq_fav',favorites);updateFavUI();renderLib();if($('view-library').classList.contains('active'))renderLibrary();counts()}
+function updateFavUI(){document.querySelectorAll('[data-fav]').forEach(b=>{const l=b.closest('#colBody,#libBody,.grid,.list');});
+  document.querySelectorAll('.fv[data-fav]').forEach(b=>{const parent=b.closest('[data-i]');if(!parent)return;});
+  const on=current&&isFav(current.stationuuid);$('pFav').classList.toggle('on',!!on);$('npFav').classList.toggle('on',!!on);
+  [$('pFav'),$('npFav')].forEach(b=>b.querySelector('path').setAttribute('fill',on?'currentColor':'none'));
+  if(colState)renderList($('colBody'),colState.list,colMode);renderHomeCached();
 }
-function stationQuery(params){
-  const p = new URLSearchParams(params);
-  if(hideBroken) p.set('hidebroken','true');
-  return '/json/stations/search?' + p.toString();
-}
-async function fetchPopular(limit=24){ return apiFetch(stationQuery({order:'clickcount', reverse:'true', limit})); }
-async function fetchByTag(tag, limit=30){ return apiFetch(stationQuery({tag, order:'votes', reverse:'true', limit})); }
-async function fetchByCountry(country, limit=30){ return apiFetch(stationQuery({country, order:'votes', reverse:'true', limit})); }
-async function fetchByName(name, limit=30){ return apiFetch(stationQuery({name, order:'votes', reverse:'true', limit})); }
-async function fetchCountries(){ return apiFetch('/json/countries'); }
+function pushRecent(s){recent=recent.filter(r=>r.stationuuid!==s.stationuuid);recent.unshift(mini(s));recent=recent.slice(0,30);save('sq_recent',recent);save('sq_last',mini(s));renderLib();renderRecentHome();counts()}
+function counts(){$('favCount').textContent=favorites.length+' istasyon';$('recCount').textContent=recent.length+' istasyon';$('skipCount').textContent=sessionSkipped.size+' istasyon'}
 
-function cleanStations(list){
-  return (list||[]).filter(s => s && (s.url_resolved || s.url) && s.name && !deadThisSession.has(s.stationuuid));
-}
-
-/* ---------------- rendering ---------------- */
-function artInner(station){
-  if(station.favicon){
-    return `<img src="${escapeAttr(station.favicon)}" alt="" onerror="this.parentElement.innerHTML='<div class="fallback-emoji">📻</div>'">`;
-  }
-  return `<div class="fallback-emoji">📻</div>`;
-}
-function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c])); }
-function escapeAttr(s){ return escapeHtml(s); }
-function isFav(uuid){ return favorites.some(f=>f.stationuuid===uuid); }
-
-function stationCard(station){
-  const playing = currentStation && currentStation.stationuuid===station.stationuuid;
-  const tags = (station.tags||'').split(',').filter(Boolean).slice(0,2).join(' · ');
-  const meta = [station.country, tags].filter(Boolean).join(' · ') || 'Radyo';
-  return `
-  <div class="station-card${playing?' playing':''}" data-uuid="${escapeAttr(station.stationuuid)}">
-    <div class="art">
-      ${artInner(station)}
-      <button class="fav-toggle${isFav(station.stationuuid)?' active':''}" data-fav="${escapeAttr(station.stationuuid)}" title="Favori">
-        <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z" fill="${isFav(station.stationuuid)?'currentColor':'none'}"/></svg>
-      </button>
-      <div class="play-overlay">
-        <div class="play-fab" data-play="${escapeAttr(station.stationuuid)}">
-          <svg viewBox="0 0 24 24" fill="currentColor">${playing && isPlaying ? '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>' : '<path d="M8 5v14l11-7z"/>'}</svg>
-        </div>
-      </div>
-    </div>
-    <div class="st-name">${escapeHtml(station.name)}</div>
-    <div class="st-meta">${escapeHtml(meta)}</div>
-  </div>`;
-}
-
-function renderGrid(container, stations, emptyMsg){
-  if(!stations || !stations.length){
-    container.innerHTML = `<div class="empty-state">${emptyMsg||'Sonuç bulunamadı.'}</div>`;
-    return;
-  }
-  container.innerHTML = stations.map(stationCard).join('');
-  bindStationEvents(container, stations);
-}
-
-function bindStationEvents(container, stations){
-  const byUuid = {}; stations.forEach(s=>byUuid[s.stationuuid]=s);
-  const startFrom = s => { queue = stations.slice(); queueIndex = queue.findIndex(x=>x.stationuuid===s.stationuuid); playStation(s); };
-  container.querySelectorAll('[data-play]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const s = byUuid[btn.getAttribute('data-play')];
-      if(s) startFrom(s);
-    });
-  });
-  container.querySelectorAll('.station-card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      const s = byUuid[card.getAttribute('data-uuid')];
-      if(s) startFrom(s);
-    });
-  });
-  container.querySelectorAll('[data-fav]').forEach(btn=>{
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const s = byUuid[btn.getAttribute('data-fav')];
-      if(s) toggleFavorite(s);
-    });
-  });
-}
-
-/* ---------------- favorites / recent ---------------- */
-function toggleFavorite(station){
-  const idx = favorites.findIndex(f=>f.stationuuid===station.stationuuid);
-  if(idx>-1){ favorites.splice(idx,1); showToast('Favorilerden çıkarıldı'); }
-  else{ favorites.unshift(minimalStation(station)); showToast('Favorilere eklendi'); }
-  saveJSON('suqoo_favorites', favorites);
-  refreshAllVisibleFavIcons();
-  if(currentStation && currentStation.stationuuid===station.stationuuid) updatePlayerFav();
-  if($('view-favorites').classList.contains('active')) renderFavoritesView();
-  updateSettingsCounts();
-}
-function minimalStation(s){
-  return {stationuuid:s.stationuuid, name:s.name, url:s.url, url_resolved:s.url_resolved, favicon:s.favicon, country:s.country, tags:s.tags};
-}
-function refreshAllVisibleFavIcons(){
-  document.querySelectorAll('.fav-toggle').forEach(btn=>{
-    const uuid = btn.getAttribute('data-fav');
-    const on = isFav(uuid);
-    btn.classList.toggle('active', on);
-    const path = btn.querySelector('path');
-    if(path) path.setAttribute('fill', on ? 'currentColor':'none');
-  });
-}
-function pushRecent(station){
-  recent = recent.filter(r=>r.stationuuid!==station.stationuuid);
-  recent.unshift(minimalStation(station));
-  recent = recent.slice(0,16);
-  saveJSON('suqoo_recent', recent);
-  updateSettingsCounts();
-}
-
-/* ---------------- player ---------------- */
-const playerEl = $('player');
-
-async function playStation(station){
-  const token = ++playToken;
-  clearTimeout(playTimeout);
-  currentStation = station;
-  updatePlayerInfo(station);
-  playerEl.classList.add('visible');
-  setPlayButtonLoading(true);
-  refreshPlayingCardStates();
-  updateQueueLabel();
+/* ---- player ---- */
+const audio=$('audio'),player=$('player');
+function playFrom(list,i){queue=list;qIndex=i;play(list[i])}
+async function play(s,auto){
+  clearTimeout(skipTimer);current=s;player.classList.add('visible');fillPlayer(s);setLoading(true);
   try{
-    let streamUrl = station.url_resolved || station.url;
-    if(activeBase && station.stationuuid){
-      try{
-        const resolved = await apiFetch('/json/url/' + encodeURIComponent(station.stationuuid));
-        if(resolved && resolved.url) streamUrl = resolved.url;
-      }catch(e){}
-    }
-    if(token!==playToken) return;
-    audio.src = streamUrl;
-    audio.volume = volume/100;
-    /* no-audio watchdog: if nothing plays within 8s, treat as dead */
-    playTimeout = setTimeout(()=>{ if(token===playToken && !isPlaying) handleDeadStation(station, token); }, 8000);
+    let url=s.url_resolved||s.url;
+    if(base&&s.stationuuid){try{const r=await api('/json/url/'+encodeURIComponent(s.stationuuid));if(r&&r.url)url=r.url}catch(e){}}
+    audio.src=url;audio.volume=muted?0:volume/100;
+    if(autoSkip)skipTimer=setTimeout(()=>{if(current===s&&!isPlaying)fail(s,'Ses gelmedi')},8000);
     await audio.play();
-  }catch(err){
-    if(token!==playToken) return;
-    handleDeadStation(station, token);
+  }catch(e){if(current===s)fail(s,'Çalınamadı')}
+  refreshCards();
+}
+function fail(s,why){
+  if(current!==s)return;clearTimeout(skipTimer);isPlaying=false;setLoading(false);
+  if(autoSkip&&queue.length>1){sessionSkipped.add(s.stationuuid);counts();toast(`${why}: ${s.name} atlandı`);next()}
+  else toast(`${s.name}: ${why.toLowerCase()}.`);
+}
+function next(){if(!queue.length)return toast('Sıra boş');let tries=0;do{qIndex=(qIndex+1)%queue.length;tries++}while(sessionSkipped.has(queue[qIndex].stationuuid)&&tries<queue.length);play(queue[qIndex])}
+function prev(){if(!queue.length)return toast('Sıra boş');let tries=0;do{qIndex=(qIndex-1+queue.length)%queue.length;tries++}while(sessionSkipped.has(queue[qIndex].stationuuid)&&tries<queue.length);play(queue[qIndex])}
+function shuffle(){if(!queue.length)return toast('Önce bir liste aç');queue=[...queue].sort(()=>Math.random()-.5);qIndex=-1;next();toast('Karışık çalıyor')}
+function toggle(){if(!current){if(queue.length)return next();return toast('Önce bir istasyon seç')}if(audio.paused){if(!audio.src)return play(current);audio.play().catch(()=>toast('Oynatılamadı'))}else audio.pause()}
+function stop(){clearTimeout(skipTimer);audio.pause();audio.removeAttribute('src');audio.load();isPlaying=false;player.classList.remove('playing');setLoading(false);$('liveTxt').textContent='Durduruldu';refreshCards()}
+function setLoading(l){const ic=l?'<div class="spin"></div>':(isPlaying?ICON.pause:ICON.play);$('pPlay').innerHTML=ic;$('npPlay').innerHTML=ic;$('liveTxt').textContent=l?'Bağlanıyor…':(isPlaying?'Canlı yayın':'Duraklatıldı')}
+function fillPlayer(s){$('pArt').innerHTML=artImg(s)+'<canvas class="cviz" id="pViz"></canvas><div class="meme" id="pMeme"></div>';$('npArt').innerHTML=artImg(s)+'<canvas class="cviz" id="npViz"></canvas><div class="meme big" id="npMeme"></div>';try{applyMeme()}catch(e){}$('pName').textContent=s.name;$('npName').textContent=s.name;$('pSub').textContent=meta(s);$('npSub').textContent=meta(s);updateFavUI();document.title=s.name+' — SUQOO';
+  if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:s.name,artist:s.country||'Canlı radyo',album:'SUQOO',artwork:s.favicon?[{src:s.favicon,sizes:'256x256'}]:[]})}}
+function refreshCards(){document.querySelectorAll('.card,.lr').forEach(el=>{});if(colState)renderList($('colBody'),colState.list,colMode);renderHomeCached();renderLib();if($('view-library').classList.contains('active'))renderLibrary()}
+audio.addEventListener('playing',()=>{clearTimeout(skipTimer);isPlaying=true;player.classList.add('playing');setLoading(false);if(current)pushRecent(current);refreshCards();if('mediaSession' in navigator)navigator.mediaSession.playbackState='playing'});
+audio.addEventListener('pause',()=>{isPlaying=false;player.classList.remove('playing');setLoading(false);refreshCards();if('mediaSession' in navigator)navigator.mediaSession.playbackState='paused'});
+audio.addEventListener('waiting',()=>setLoading(true));
+audio.addEventListener('stalled',()=>{if(current&&!isPlaying&&autoSkip&&!skipTimer)skipTimer=setTimeout(()=>fail(current,'Yayın takıldı'),8000)});
+audio.addEventListener('error',()=>{if(current)fail(current,'Yayına ulaşılamadı')});
+function setVol(v){volume=+v;audio.volume=muted?0:volume/100;save('sq_vol',volume);['pVol','npVol','setVol'].forEach(id=>{$(id).value=volume;$(id).style.setProperty('--p',volume+'%')})}
+function toggleMute(){muted=!muted;audio.volume=muted?0:volume/100;$('pMute').classList.toggle('on',muted);toast(muted?'Sessiz':'Ses açık')}
+if('mediaSession' in navigator){const ms=navigator.mediaSession;ms.setActionHandler('play',toggle);ms.setActionHandler('pause',toggle);ms.setActionHandler('previoustrack',prev);ms.setActionHandler('nexttrack',next);ms.setActionHandler('stop',stop)}
+
+/* sleep timer */
+function setSleep(min){clearInterval(sleepInt);if(!min){sleepEnd=0;$('timerBadge').textContent='';$('pSleep').classList.remove('on');$('sleepSel').value='0';return}
+  sleepEnd=Date.now()+min*60000;$('pSleep').classList.add('on');$('sleepSel').value=String(min);toast(`Uyku zamanlayıcı: ${min} dk`);
+  sleepInt=setInterval(()=>{const r=sleepEnd-Date.now();if(r<=0){setSleep(0);stop();toast('Uyku zamanlayıcı: yayın durduruldu');return}const m=Math.floor(r/60000),s=Math.floor(r%60000/1000);$('timerBadge').textContent=`${m}:${String(s).padStart(2,'0')}`},500)}
+$('pSleep').onclick=()=>{const steps=[0,15,30,45,60,90];const cur=+$('sleepSel').value;setSleep(steps[(steps.indexOf(cur)+1)%steps.length])};
+$('sleepSel').onchange=e=>setSleep(+e.target.value);
+
+/* ---- navigation ---- */
+function buildNav(){$('sideNav').innerHTML=NAV.map(n=>`<button data-view="${n.id}">${n.i}<span>${n.l}</span></button>`).join('');$('mnav').innerHTML=NAV.map(n=>`<button data-view="${n.id}">${n.i}<span>${n.l}</span></button>`).join('');document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>go(b.dataset.view))}
+function go(v,push=true){if(push&&v!=='collection'){histStack.push(v);if(histStack.length>20)histStack.shift()}document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('view-'+v).classList.add('active');document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));$('main').scrollTo({top:0});if(v==='library')renderLibrary();if(v==='settings')counts();if(v==='browse')loadCountries()}
+$('backBtn').onclick=()=>{histStack.pop();go(histStack.pop()||'home')};
+$('settingsTop').onclick=()=>go('settings');
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+
+/* ---- home ---- */
+let homeCache={tr:[],top:[]};
+function greet(){const h=new Date().getHours();$('greet').textContent=h<6?'İyi geceler':h<12?'Günaydın':h<18?'İyi günler':'İyi akşamlar'}
+function renderQuick(){const items=[{l:'Türkiye',a:()=>openCol('country','Turkey','Türkiye'),c:'#e8115b',i:ICON.globe},{l:'Favorilerim',a:()=>{go('library')},c:'#1ED760',i:ICON.heart},{l:'En çok dinlenen',a:()=>openTop(),c:'#0d73ec',i:ICON.radio},{l:'Haber',a:()=>openCol('tag','news','Haber'),c:'#503750',i:ICON.radio},{l:'Türkçe Pop',a:()=>openCol('tag','turkish pop','Türkçe Pop'),c:'#dc148c',i:ICON.radio},{l:'Jazz',a:()=>openCol('tag','jazz','Jazz'),c:'#ba5d07',i:ICON.radio}];
+  if(!$('quick'))return;$('quick').innerHTML=items.map((it,i)=>`<button class="q" data-q="${i}"><span class="c" style="background:${it.c}">${it.i}</span><span>${it.l}</span></button>`).join('');$('quick').querySelectorAll('[data-q]').forEach(b=>b.onclick=items[+b.dataset.q].a)}
+function renderHomeCached(){if(homeCache.tr.length)renderList($('trGrid'),homeCache.tr,'grid');if(homeCache.top.length)renderList($('topGrid'),homeCache.top,'grid');renderRecentHome()}
+function renderRecentHome(){const s=$('recentSec');if(!recent.length){s.style.display='none';return}s.style.display='block';renderList($('recentGrid'),recent.slice(0,6),'grid')}
+async function loadHome(){
+  $('trGrid').innerHTML=$('topGrid').innerHTML='<div class="state" style="grid-column:1/-1"><div class="spin"></div>Yükleniyor…</div>';
+  try{homeCache.tr=clean(await fetchBy('country','Turkey',12));renderList($('trGrid'),homeCache.tr,'grid')}catch(e){$('trGrid').innerHTML='<div class="state" style="grid-column:1/-1">Sunucuya ulaşılamadı.</div>'}
+  try{homeCache.top=clean(await fetchTop(12));renderList($('topGrid'),homeCache.top,'grid')}catch(e){$('topGrid').innerHTML='<div class="state" style="grid-column:1/-1">Sunucuya ulaşılamadı.</div>'}
+}
+function tiles(el,list){el.innerHTML=list.map((g,i)=>`<button class="tile" style="background:${g.c}" data-g="${i}">${g.l}<small>${g.t}</small><span class="deco"></span></button>`).join('');el.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const g=list[+b.dataset.g];openCol('tag',g.t,g.l,g.c)})}
+$('trGrid').parentElement.querySelector('[data-country]').onclick=()=>openCol('country','Turkey','Türkiye');
+$('topGrid').parentElement.querySelector('[data-top]').onclick=()=>openTop();
+
+/* ---- browse: countries & languages ---- */
+let countries=null,langs=null;
+const FLAG={Turkey:'🇹🇷','The United States Of America':'🇺🇸',Germany:'🇩🇪',France:'🇫🇷','The United Kingdom Of Great Britain And Northern Ireland':'🇬🇧',Italy:'🇮🇹',Spain:'🇪🇸','The Russian Federation':'🇷🇺',Brazil:'🇧🇷',Mexico:'🇲🇽',Canada:'🇨🇦',Australia:'🇦🇺',Greece:'🇬🇷','The Netherlands':'🇳🇱',Poland:'🇵🇱',Japan:'🇯🇵',India:'🇮🇳',Argentina:'🇦🇷',Azerbaijan:'🇦🇿',Austria:'🇦🇹',Switzerland:'🇨🇭',Belgium:'🇧🇪',Sweden:'🇸🇪',Norway:'🇳🇴',Denmark:'🇩🇰',Finland:'🇫🇮',Portugal:'🇵🇹',Ukraine:'🇺🇦',Romania:'🇷🇴',Bulgaria:'🇧🇬',Hungary:'🇭🇺',Czechia:'🇨🇿',Serbia:'🇷🇸',Croatia:'🇭🇷','Bosnia And Herzegovina':'🇧🇦','North Macedonia':'🇲🇰',Albania:'🇦🇱',Egypt:'🇪🇬','Saudi Arabia':'🇸🇦','United Arab Emirates':'🇦🇪',Iran:'🇮🇷',Iraq:'🇮🇶',Israel:'🇮🇱',Morocco:'🇲🇦',Algeria:'🇩🇿',Tunisia:'🇹🇳','South Africa':'🇿🇦',Nigeria:'🇳🇬',Kenya:'🇰🇪',China:'🇨🇳','South Korea':'🇰🇷',Indonesia:'🇮🇩',Philippines:'🇵🇭',Thailand:'🇹🇭',Vietnam:'🇻🇳',Pakistan:'🇵🇰',Kazakhstan:'🇰🇿',Uzbekistan:'🇺🇿',Colombia:'🇨🇴',Chile:'🇨🇱',Peru:'🇵🇪',Venezuela:'🇻🇪',Cyprus:'🇨🇾',Ireland:'🇮🇪','New Zealand':'🇳🇿'};
+async function loadCountries(){if(countries)return;try{countries=(await api('/json/countries')).filter(c=>c.name&&c.stationcount>0).sort((a,b)=>b.stationcount-a.stationcount);renderCountries('')}catch(e){$('countryGrid').innerHTML='<div class="state">Ülkeler yüklenemedi.</div>'}
+  try{langs=(await api('/json/languages')).filter(c=>c.name&&c.stationcount>4).sort((a,b)=>b.stationcount-a.stationcount);renderLangs('')}catch(e){$('langGrid').innerHTML='<div class="state">Diller yüklenemedi.</div>'}}
+function renderCountries(f){const l=countries.filter(c=>c.name.toLowerCase().includes(f.toLowerCase()));$('countryGrid').innerHTML=l.map((c,i)=>`<button class="cbtn" data-c="${esc(c.name)}"><span class="fl">${FLAG[c.name]||'🌐'}</span><span><div class="cn">${esc(c.name)}</div><div class="cc">${c.stationcount} istasyon</div></span></button>`).join('')||'<div class="state">Eşleşen ülke yok.</div>';$('countryGrid').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>openCol('country',b.dataset.c,b.dataset.c))}
+function renderLangs(f){const l=langs.filter(c=>c.name.toLowerCase().includes(f.toLowerCase()));$('langGrid').innerHTML=l.map(c=>`<button class="cbtn" data-l="${esc(c.name)}"><span class="fl">🗣️</span><span><div class="cn">${esc(c.name)}</div><div class="cc">${c.stationcount} istasyon</div></span></button>`).join('')||'<div class="state">Eşleşen dil yok.</div>';$('langGrid').querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>openCol('language',b.dataset.l,b.dataset.l))}
+$('countryFilter').oninput=e=>countries&&renderCountries(e.target.value);
+$('langFilter').oninput=e=>langs&&renderLangs(e.target.value);
+$('browseSeg').querySelectorAll('[data-bs]').forEach(b=>b.onclick=()=>{$('browseSeg').querySelectorAll('button').forEach(x=>x.classList.remove('active'));b.classList.add('active');['Genres','Countries','Languages'].forEach(k=>$('bs'+k).style.display=k.toLowerCase()===b.dataset.bs?'block':'none')});
+
+/* ---- collection ---- */
+const PAGE=60;
+async function openCol(type,val,label,color){
+  colState={type,val,label,list:[],offset:0,done:false};go('collection');
+  const kinds={country:'Ülke',tag:'Tür',name:'Arama',language:'Dil',top:'Liste'};
+  $('colKind').textContent=kinds[type]||'Koleksiyon';$('colTitle').textContent=label;$('colDesc').textContent='Yükleniyor…';
+  $('colArt').style.background=color||(type==='country'?'#1e3264':type==='language'?'#27856a':type==='top'?'#0d73ec':'#503750');
+  $('colArt').innerHTML=type==='country'?`<span style="font-size:80px">${FLAG[val]||'🌐'}</span>`:ICON.radio;
+  $('colBody').innerHTML='<div class="state"><div class="spin"></div>Yükleniyor…</div>';$('colMore').style.display='none';
+  await loadMore(true);
+}
+function openTop(){openCol('top','','En çok dinlenen','#0d73ec')}
+async function loadMore(first){
+  const st=colState;$('colMore').disabled=true;$('colMore').textContent='Yükleniyor…';
+  try{const raw=st.type==='top'?await fetchTop(PAGE,st.offset):await fetchBy(st.type,st.val,PAGE,st.offset);
+    if(st!==colState)return;const c=clean(raw);st.offset+=PAGE;if(c.length<PAGE)st.done=true;
+    const ids=new Set(st.list.map(s=>s.stationuuid));st.list=st.list.concat(c.filter(s=>!ids.has(s.stationuuid)));
+    renderList($('colBody'),st.list,colMode,'Bu koleksiyonda çalışan istasyon bulunamadı.');
+    $('colDesc').textContent=`${st.list.length}${st.done?'':'+'} istasyon · oynatabilirsin, sıradakine geçebilirsin`;
+    $('colMore').style.display=st.done?'none':'block';$('colMore').disabled=false;$('colMore').textContent='Daha fazla yükle';
+    if(current&&queue===st.list)queue=st.list;
+  }catch(e){if(first)$('colBody').innerHTML='<div class="state">Sunucuya ulaşılamadı. Tekrar deneyin.</div>';$('colDesc').textContent='Hata'}
+}
+$('colMore').onclick=()=>loadMore(false);
+$('colPlay').onclick=()=>{if(colState&&colState.list.length)playFrom(colState.list,0)};
+$('colShuffle').onclick=()=>{if(colState&&colState.list.length){queue=[...colState.list].sort(()=>Math.random()-.5);qIndex=-1;next()}};
+document.querySelectorAll('[data-vm]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-vm]').forEach(x=>x.classList.remove('active'));b.classList.add('active');colMode=b.dataset.vm;if(colState)renderList($('colBody'),colState.list,colMode)});
+
+/* ---- library ---- */
+function renderLibrary(){const list=libTab==='fav'?favorites:recent;renderList($('libBody'),list,'list',libTab==='fav'?'Henüz favorin yok. Bir istasyonun kalbine dokun.':'Henüz bir şey dinlemedin.')}
+document.querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{document.querycurrentSelectorAll&&0;document.querySelectorAll('[data-lt]').forEach(x=>x.classList.remove('active'));b.classList.add('active');libTab=b.dataset.lt;renderLibrary()});
+$('libPlay').onclick=()=>{const l=libTab==='fav'?favorites:recent;if(l.length)playFrom(l,0);else toast('Liste boş')};
+$('libClear').onclick=()=>{if(libTab==='fav'){if(favorites.length&&confirm('Tüm favoriler silinsin mi?')){favorites=[];save('sq_fav',favorites);toast('Favoriler temizlendi')}}else{if(recent.length&&confirm('Geçmiş silinsin mi?')){recent=[];save('sq_recent',recent);toast('Geçmiş temizlendi')}}renderLibrary();renderLib();renderRecentHome();counts();updateFavUI()};
+function renderLib(){const r=(s)=>`<div class="row${isNow(s)?' now':''}" data-uuid="${esc(s.stationuuid)}">${s.favicon?`<img src="${esc(s.favicon)}" alt="" onerror="this.outerHTML='<div class=&quot;ph&quot;>${ICON.radio.replace(/"/g,'&quot;')}</div>'">`:`<div class="ph">${ICON.radio}</div>`}<div class="t"><div class="n">${esc(s.name)}</div><div class="s">${esc(s.country||'Radyo')}</div></div></div>`;
+  $('libFav').innerHTML=favorites.slice(0,8).map(r).join('')||'<div class="row" style="color:var(--faint);font-size:13px">Favori yok</div>';
+  $('libRecent').innerHTML=recent.slice(0,8).map(r).join('')||'<div class="row" style="color:var(--faint);font-size:13px">Geçmiş yok</div>';
+  $('libFav').querySelectorAll('[data-uuid]').forEach((el,i)=>el.onclick=()=>playFrom(favorites,i));
+  $('libRecent').querySelectorAll('[data-uuid]').forEach((el,i)=>el.onclick=()=>playFrom(recent,i));}
+
+/* ---- search ---- */
+let st;$('searchInput').oninput=e=>{const v=e.target.value.trim();$('searchClear').classList.toggle('show',!!v);clearTimeout(st);if(v.length<2)return;st=setTimeout(()=>openCol('name',v,`"${v}"`,'#503750'),450)};
+$('searchClear').onclick=()=>{$('searchInput').value='';$('searchClear').classList.remove('show');$('searchInput').focus()};
+
+/* ---- player buttons ---- */
+$('pPlay').onclick=toggle;$('npPlay').onclick=toggle;$('pNext').onclick=next;$('npNext').onclick=next;$('pPrev').onclick=prev;$('npPrev').onclick=prev;$('pStop').onclick=stop;$('npStop').onclick=stop;$('pShuffle').onclick=shuffle;
+$('pFav').onclick=()=>current&&toggleFav(current);$('npFav').onclick=()=>current&&toggleFav(current);
+$('pVol').oninput=e=>setVol(e.target.value);$('npVol').oninput=e=>setVol(e.target.value);$('setVol').oninput=e=>setVol(e.target.value);
+$('pMute').onclick=toggleMute;
+$('pExpand').onclick=()=>current&&$('np').classList.add('open');$('pArt').onclick=()=>current&&$('np').classList.add('open');$('pName').onclick=()=>current&&$('np').classList.add('open');
+$('npClose').onclick=()=>$('np').classList.remove('open');
+
+/* ---- settings ---- */
+function sw(id,get,set){const el=$(id);el.classList.toggle('on',get());el.onclick=()=>{set(!get());el.classList.toggle('on',get())}}
+sw('swSkip',()=>autoSkip,v=>{autoSkip=v;save('sq_skip',v);toast(v?'Sessiz yayınlar atlanacak':'Otomatik atlama kapalı')});
+sw('swBroken',()=>hideBroken,v=>{hideBroken=v;save('sq_hb',v);toast(v?'Bozuk yayın filtresi açık':'Bozuk yayın filtresi kapalı');loadHome()});
+sw('swResume',()=>resume,v=>{resume=v;save('sq_resume',v)});
+$('clearFav').onclick=()=>{if(favorites.length&&confirm('Tüm favoriler silinsin mi?')){favorites=[];save('sq_fav',favorites);renderLib();counts();updateFavUI();toast('Favoriler temizlendi')}};
+$('clearRec').onclick=()=>{if(recent.length&&confirm('Geçmiş silinsin mi?')){recent=[];save('sq_recent',recent);renderLib();renderRecentHome();counts();toast('Geçmiş temizlendi')}};
+$('clearSkip').onclick=()=>{sessionSkipped.clear();counts();toast('Atlanan istasyonlar sıfırlandı')};
+$('reconnect').onclick=()=>{base=null;countries=null;langs=null;loadHome();toast('Yeniden bağlanıyor…')};
+document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{theme=b.dataset.th;applyTheme()});
+$('themeBtn').onclick=()=>{theme=theme==='dark'?'light':'dark';applyTheme()};
+function applyTheme(){document.body.classList.toggle('light',theme==='light');save('sq_theme',theme);document.querySelectorAll('[data-th]').forEach(b=>b.classList.toggle('active',b.dataset.th===theme));document.querySelector('meta[name=theme-color]').content=theme==='light'?'#f2f2f2':'#000000'}
+function renderAccents(){$('accents').innerHTML=ACCENTS.map(c=>`<button data-ac="${c}" class="${c===accent?'active':''}" style="width:30px;height:30px;padding:0;border-radius:50%;background:${c};border:${c===accent?'3px solid var(--text)':'3px solid transparent'}"></button>`).join('');$('accents').querySelectorAll('[data-ac]').forEach(b=>b.onclick=()=>{accent=b.dataset.ac;save('sq_accent',accent);applyAccent();renderAccents()})}
+function applyAccent(){document.documentElement.style.setProperty('--accent',accent);makeIcons()}
+
+/* ---- keyboard ---- */
+document.addEventListener('keydown',e=>{
+  if(e.target.matches('input,select,textarea')){if(e.key==='Escape')e.target.blur();return}
+  const k=e.key.toLowerCase();
+  if(e.key===' '){e.preventDefault();toggle()}else if(e.key==='ArrowRight')next();else if(e.key==='ArrowLeft')prev();
+  else if(e.key==='ArrowUp'){e.preventDefault();setVol(Math.min(100,volume+5))}else if(e.key==='ArrowDown'){e.preventDefault();setVol(Math.max(0,volume-5))}
+  else if(k==='m')toggleMute();else if(k==='f'&&current)toggleFav(current);else if(e.key==='/'){e.preventDefault();$('searchInput').focus()}
+  else if(e.key==='Escape')$('np').classList.remove('open');
+});
+
+/* ---- icons (emoji app icon + manifest) ---- */
+function makeIcons(){try{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#121212';x.beginPath();x.roundRect(0,0,512,512,110);x.fill();x.fillStyle=accent;x.beginPath();x.arc(256,256,190,0,7);x.fill();x.font='240px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('📻',256,272);const url=c.toDataURL('image/png');$('appleIcon').href=url;
+  const man={name:'SUQOO Radyo',short_name:'SUQOO',start_url:location.href,display:'standalone',background_color:'#000000',theme_color:'#000000',icons:[{src:url,sizes:'512x512',type:'image/png'}]};
+  $('manifestLink').href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}))}catch(e){}}
+
+/* ---- init ---- */
+greet();buildNav();renderQuick();tiles($('homeTiles'),GENRES.slice(0,8));tiles($('genreTiles'),GENRES);renderLib();renderRecentHome();setVol(volume);applyTheme();applyAccent();renderAccents();counts();
+go('home');loadHome();
+if(resume){const last=load('sq_last',null);if(last){current=last;queue=recent.length?recent:[last];qIndex=queue.findIndex(s=>s.stationuuid===last.stationuuid);fillPlayer(last);$('liveTxt').textContent='Devam etmek için oynat'}}
+
+/* ---- Spektrum ---- */
+let actx=null,analyser=null,srcNode=null,freq=null,vizRAF=0,fake=[],realOK=false,zeroFrames=0;
+
+function ensureAudioGraph(){/* devre dışı: Web Audio bazı yayınları sessize alıyordu */}
+function vizColorAt(i,n,ctx,h){
+  const c=viz.color;
+  if(c==='blue')return '#60a5fa';
+  if(c==='custom')return viz.custom;
+  if(c==='rainbow')return `hsl(${Math.round(i/n*300)},90%,60%)`;
+  if(c==='tr')return i%2?'#ffffff':'#e30a17';
+  return getComputedStyle(document.body).getPropertyValue('--accent').trim()||'#1ED760';
+}
+function sampleBars(n){
+  const out=new Float32Array(n);
+  if(analyser&&isPlaying){
+    analyser.getByteFrequencyData(freq);
+    let sum=0;for(let i=0;i<freq.length;i++)sum+=freq[i];
+    if(sum===0){zeroFrames++;if(zeroFrames>90)realOK=false}else{zeroFrames=0;realOK=true}
+    if(realOK){const usable=Math.floor(freq.length*.7);for(let i=0;i<n;i++){const a=Math.floor(i/n*usable),b=Math.max(a+1,Math.floor((i+1)/n*usable));let m=0;for(let k=a;k<b;k++)m=Math.max(m,freq[k]);out[i]=Math.min(1,(m/255)*(viz.sens/50))}return out}
   }
+  // yedek: yayın CORS izni vermiyorsa yumuşak sentetik animasyon
+  const t=performance.now()/1000,amp=isPlaying?(viz.sens/100)*(0.35+0.65*(muted?0:volume/100)):0.05;
+  if(fake.length!==n)fake=new Array(n).fill(0);
+  for(let i=0;i<n;i++){const target=isPlaying?(.25+.75*Math.abs(Math.sin(t*2.1+i*.55)*Math.cos(t*1.3+i*.21)))*amp*(1-i/n*.5):0.04;fake[i]+=(target-fake[i])*.18;out[i]=fake[i]}
+  return out;
 }
+function drawViz(ctx,W,H,big){
+  const n=viz.bars,v=sampleBars(n);ctx.clearRect(0,0,W,H);
+  const st=viz.style;
+  if(st==='ring'){const cx=W/2,cy=H/2,r=Math.min(W,H)*(big?.28:.3),len=Math.min(W,H)*(big?.2:.18);ctx.lineWidth=big?4:2;ctx.lineCap='round';
+    for(let i=0;i<n;i++){const a=i/n*Math.PI*2-Math.PI/2,l=4+v[i]*len;ctx.strokeStyle=vizColorAt(i,n);ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);ctx.lineTo(cx+Math.cos(a)*(r+l),cy+Math.sin(a)*(r+l));ctx.stroke()}return}
+  if(st==='wave'){ctx.lineWidth=big?3:2;ctx.lineJoin='round';ctx.strokeStyle=vizColorAt(0,n);
+    if(viz.color==='rainbow'||viz.color==='tr'){const g=ctx.createLinearGradient(0,0,W,0);for(let i=0;i<=8;i++)g.addColorStop(i/8,vizColorAt(i,8));ctx.strokeStyle=g}
+    ctx.beginPath();for(let i=0;i<n;i++){const x=i/(n-1)*W,y=H/2-(v[i]-.02)*H*.45*Math.sin(i/(n-1)*Math.PI+.2);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.stroke();
+    ctx.beginPath();for(let i=0;i<n;i++){const x=i/(n-1)*W,y=H/2+(v[i]-.02)*H*.45*Math.sin(i/(n-1)*Math.PI+.2);i?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.globalAlpha=.5;ctx.stroke();ctx.globalAlpha=1;return}
+  const gap=Math.max(1,W/n*.3),bw=W/n-gap;
+  for(let i=0;i<n;i++){const h=Math.max(2,v[i]*H*(st==='mirror'?.48:.95));ctx.fillStyle=vizColorAt(i,n);const x=i*(bw+gap)+gap/2;
+    if(st==='mirror'){rr(ctx,x,H/2-h,bw,h,bw/2);rr(ctx,x,H/2,bw,h,bw/2)}else rr(ctx,x,H-h,bw,h,bw/2)}
+}
+function rr(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();ctx.fill()}
+function fitCanvas(c){const d=window.devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;if(!w||!h)return null;if(c.width!==w*d||c.height!==h*d){c.width=w*d;c.height=h*d}const ctx=c.getContext('2d');ctx.setTransform(d,0,0,d,0,0);return {ctx,w,h}}
+function vizLoop(){
+  vizRAF=requestAnimationFrame(vizLoop);
+  if(!viz.on)return;try{
+  const pv=$('pViz'),nv=$('npViz');if(!pv)return;
+  const a=fitCanvas(pv);if(a){a.ctx.globalAlpha=viz.alpha/100;drawViz(a.ctx,a.w,a.h,false)}
+  if(nv&&$('np').classList.contains('open')){const b=fitCanvas(nv);if(b){b.ctx.globalAlpha=viz.alpha/100;drawViz(b.ctx,b.w,b.h,true)}}}catch(e){}
+}
+function applyViz(){
+  if(!$('swViz'))return;
+  document.body.classList.toggle('viz-off',!viz.on);$('npArt').classList.toggle('dim',viz.on&&viz.bg);$('vizAlpha').value=viz.alpha;
+  $('swViz').classList.toggle('on',viz.on);$('swVizBg').classList.toggle('on',viz.bg);
+  document.querySelectorAll('[data-vs]').forEach(b=>b.classList.toggle('active',b.dataset.vs===viz.style));
+  document.querySelectorAll('[data-vc]').forEach(b=>b.classList.toggle('active',b.dataset.vc===viz.color));
+  $('vizCustom').value=viz.custom;$('vizSens').value=viz.sens;$('vizBars').value=viz.bars;$('vizBarsTxt').textContent=viz.bars+' çubuk';
+  save('sq_viz',viz);
+  if(viz.on&&!vizRAF)vizLoop();
+}
+$('swViz').onclick=()=>{viz.on=!viz.on;applyViz();toast(viz.on?'Spektrum açık':'Spektrum kapalı')};
+$('swVizBg').onclick=()=>{viz.bg=!viz.bg;applyViz()};
+document.querySelectorAll('[data-vs]').forEach(b=>b.onclick=()=>{viz.style=b.dataset.vs;applyViz()});
+document.querySelectorAll('[data-vc]').forEach(b=>b.onclick=()=>{viz.color=b.dataset.vc;applyViz()});
+$('vizCustom').oninput=e=>{viz.custom=e.target.value;viz.color='custom';applyViz()};
+$('vizSens').oninput=e=>{viz.sens=+e.target.value;save('sq_viz',viz)};
+$('vizBars').oninput=e=>{viz.bars=+e.target.value;$('vizBarsTxt').textContent=viz.bars+' çubuk';save('sq_viz',viz)};
+// oynatıcı çubuğundaki spektruma tıklayınca stil değişir
+$('pArt').addEventListener('click',e=>{if(e.target.id==='pViz'||e.target.closest('.cviz')){e.stopPropagation();const o=['bars','mirror','wave','ring'];viz.style=o[(o.indexOf(viz.style)+1)%o.length];applyViz();toast('Spektrum: '+{bars:'Çubuk',mirror:'Ayna',wave:'Dalga',ring:'Halka'}[viz.style])}},true);
+$('vizAlpha').oninput=e=>{viz.alpha=+e.target.value;save('sq_viz',viz)};
+/* ---- Kapak etiketleri (Türkiye mizahı) ---- */
 
-function handleDeadStation(station, token){
-  if(token!==playToken) return;
-  clearTimeout(playTimeout);
-  isPlaying = false;
-  playerEl.classList.remove('playing');
-  setPlayButtonLoading(false);
-  if(!autoSkip){ showToast('Bu istasyon şu anda çalınamıyor.'); return; }
-  deadThisSession.add(station.stationuuid);
-  removeCardsFor(station.stationuuid);
-  const idx = queue.findIndex(s=>s.stationuuid===station.stationuuid);
-  if(idx>-1){ queue.splice(idx,1); if(queueIndex>=idx) queueIndex = Math.max(-1, queueIndex-1); }
-  showToast(`"${station.name}" ses vermedi, sonrakine geçiliyor…`);
-  if(queue.length){ queueIndex = (queueIndex+1) % queue.length; playStation(queue[queueIndex]); }
-  else{ stopPlayback(); }
+function memeList(){if(meme.pack==='custom'){const l=(meme.custom||'').split('\n').map(x=>x.trim()).filter(Boolean);return l.length?l:['Özel etiket ekle → Ayarlar']}return MEMES[meme.pack]||MEMES.tr}
+function nextMeme(){const l=memeList(),t=l[Math.floor(Math.random()*l.length)];['pMeme','npMeme'].forEach(id=>{const el=$(id);if(!el)return;el.className='meme'+(id==='npMeme'?' big':'')+' '+meme.pack+(meme.pos==='top'?' top':'')+(meme.on&&isPlaying?' show':'');el.innerHTML='<span>'+esc(t)+'</span>'})}
+function applyMeme(){
+  if(!$('swMeme'))return;
+  $('swMeme').classList.toggle('on',meme.on);
+  document.querySelectorAll('[data-mp]').forEach(b=>b.classList.toggle('active',b.dataset.mp===meme.pack));
+  document.querySelectorAll('[data-mpos]').forEach(b=>b.classList.toggle('active',b.dataset.mpos===meme.pos));
+  $('memeEvery').value=meme.every;$('memeEveryTxt').textContent='Her '+meme.every+' saniyede';if(document.activeElement!==$('memeCustom'))$('memeCustom').value=meme.custom;
+  save('sq_meme',meme);clearInterval(memeTimer);nextMeme();if(meme.on)memeTimer=setInterval(nextMeme,meme.every*1000);
 }
-function removeCardsFor(uuid){
-  document.querySelectorAll(`.station-card[data-uuid="${uuid}"]`).forEach(card=>{
-    card.classList.add('removing');
-    setTimeout(()=>card.remove(), 320);
-  });
-}
+$('swMeme').onclick=()=>{meme.on=!meme.on;applyMeme();toast(meme.on?'Kapak etiketleri açık':'Kapak etiketleri kapalı')};
+document.querySelectorAll('[data-mp]').forEach(b=>b.onclick=()=>{meme.pack=b.dataset.mp;applyMeme()});
+document.querySelectorAll('[data-mpos]').forEach(b=>b.onclick=()=>{meme.pos=b.dataset.mpos;applyMeme()});
+$('memeEvery').oninput=e=>{meme.every=+e.target.value;applyMeme()};
+$('memeCustom').oninput=e=>{meme.custom=e.target.value;meme.pack='custom';applyMeme()};
+audio.addEventListener('playing',nextMeme);audio.addEventListener('pause',nextMeme);
+applyMeme();
 
-function playNext(){
-  if(!queue.length){ showToast('Sırada istasyon yok.'); return; }
-  queueIndex = (queueIndex+1) % queue.length;
-  playStation(queue[queueIndex]);
-}
-function playPrev(){
-  if(!queue.length){ showToast('Sırada istasyon yok.'); return; }
-  queueIndex = (queueIndex-1+queue.length) % queue.length;
-  playStation(queue[queueIndex]);
-}
-function updateQueueLabel(){
-  const el = $('npQueue');
-  if(!queue.length || queueIndex<0){ el.textContent=''; return; }
-  const next = queue[(queueIndex+1)%queue.length];
-  el.textContent = `${queueIndex+1} / ${queue.length}` + (next && queue.length>1 ? ` · Sıradaki: ${next.name}` : '');
-}
-
-function setPlayButtonLoading(loading){
-  const icon = loading
-    ? '<div class="spinner"></div>'
-    : (isPlaying ? '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>'
-                 : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>');
-  $('pPlay').innerHTML = icon;
-  $('npPlay').innerHTML = icon;
-}
-function updatePlayIcon(){ setPlayButtonLoading(false); }
-function updatePlayerInfo(station){
-  $('pArt').innerHTML = artInner(station);
-  $('pName').textContent = station.name;
-  $('npArt').innerHTML = artInner(station);
-  $('npName').textContent = station.name;
-  const tags = (station.tags||'').split(',').filter(Boolean).slice(0,2).join(' · ');
-  const metaText = escapeHtml([station.country, tags].filter(Boolean).join(' · ') || 'Canlı Yayın');
-  $('pSub').innerHTML = `<span class="wave"><span></span><span></span><span></span></span> ` + metaText;
-  $('npSub').textContent = [station.country, tags].filter(Boolean).join(' · ') || 'Canlı Yayın';
-  updatePlayerFav();
-  updateMediaSession(station);
-}
-function updatePlayerFav(){
-  const on = currentStation && isFav(currentStation.stationuuid);
-  $('pFav').classList.toggle('active', !!on);
-  $('pFav').querySelector('path').setAttribute('fill', on ? 'currentColor':'none');
-  $('npFav').classList.toggle('active', !!on);
-  $('npFav').querySelector('path').setAttribute('fill', on ? 'currentColor':'none');
-}
-
-/* lock screen controls */
-function updateMediaSession(station){
-  if(!('mediaSession' in navigator)) return;
-  try{
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: station.name, artist: station.country || 'Canlı Yayın', album: 'SUQOO',
-      artwork: station.favicon ? [{src:station.favicon, sizes:'256x256', type:'image/png'}] : []
-    });
-    navigator.mediaSession.setActionHandler('play', ()=>togglePlayPause());
-    navigator.mediaSession.setActionHandler('pause', ()=>togglePlayPause());
-    navigator.mediaSession.setActionHandler('previoustrack', playPrev);
-    navigator.mediaSession.setActionHandler('nexttrack', playNext);
-  }catch(e){}
-}
-
-audio.addEventListener('playing', ()=>{
-  clearTimeout(playTimeout);
-  isPlaying = true;
-  playerEl.classList.add('playing');
-  setPlayButtonLoading(false);
-  if(currentStation) pushRecent(currentStation);
-  refreshPlayingCardStates();
-  if($('view-home').classList.contains('active')) loadRecentSection();
-});
-audio.addEventListener('pause', ()=>{
-  isPlaying = false;
-  playerEl.classList.remove('playing');
-  updatePlayIcon();
-  refreshPlayingCardStates();
-});
-audio.addEventListener('waiting', ()=> setPlayButtonLoading(true));
-audio.addEventListener('error', ()=>{
-  if(currentStation && audio.getAttribute('src')) handleDeadStation(currentStation, playToken);
-});
-audio.addEventListener('stalled', ()=>{
-  if(!isPlaying && currentStation) playTimeout = playTimeout || setTimeout(()=>handleDeadStation(currentStation, playToken), 8000);
-});
-
-function refreshPlayingCardStates(){
-  document.querySelectorAll('.station-card').forEach(card=>{
-    const uuid = card.getAttribute('data-uuid');
-    const active = currentStation && currentStation.stationuuid===uuid;
-    card.classList.toggle('playing', !!active);
-    const icon = card.querySelector('[data-play] svg');
-    if(icon){
-      icon.innerHTML = (active && isPlaying)
-        ? '<rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/>'
-        : '<path d="M8 5v14l11-7z"/>';
-    }
-  });
-}
-
-function togglePlayPause(){
-  if(!currentStation){ showToast('Önce bir istasyon seçin.'); return; }
-  if(audio.paused){ audio.play().catch(()=>showToast('Oynatılamadı.')); }
-  else{ audio.pause(); }
-}
-function stopPlayback(){
-  clearTimeout(playTimeout); playToken++;
-  audio.pause(); audio.removeAttribute('src'); audio.load();
-  playerEl.classList.remove('visible','playing');
-  currentStation = null; isPlaying = false;
-  refreshPlayingCardStates();
-  closeNowPlaying();
-}
-let lastVolume = volume || 80;
-function setVolume(v){
-  volume = +v; audio.volume = volume/100; saveJSON('suqoo_volume', volume);
-  $('pVol').value = volume; $('npVol').value = volume; $('settingsVol').value = volume;
-}
-function toggleMute(){
-  if(volume>0){ lastVolume = volume; setVolume(0); showToast('Sessiz'); }
-  else{ setVolume(lastVolume||80); }
-}
-
-const npOverlay = $('npOverlay');
-function openNowPlaying(){ if(!currentStation) return; npOverlay.classList.add('open'); }
-function closeNowPlaying(){ npOverlay.classList.remove('open'); }
-
-$('pPlay').addEventListener('click', e=>{ e.stopPropagation(); togglePlayPause(); });
-$('pPrev').addEventListener('click', e=>{ e.stopPropagation(); playPrev(); });
-$('pNext').addEventListener('click', e=>{ e.stopPropagation(); playNext(); });
-$('pStop').addEventListener('click', e=>{ e.stopPropagation(); stopPlayback(); });
-$('pFav').addEventListener('click', e=>{ e.stopPropagation(); if(currentStation) toggleFavorite(currentStation); });
-$('pVol').addEventListener('click', e=> e.stopPropagation());
-$('pVol').addEventListener('input', e=> setVolume(e.target.value));
-playerEl.addEventListener('click', e=>{ if(e.target.closest('.p-controls')) return; openNowPlaying(); });
-$('npCollapseBtn').addEventListener('click', closeNowPlaying);
-$('npClose').addEventListener('click', closeNowPlaying);
-$('npPlay').addEventListener('click', togglePlayPause);
-$('npPrev').addEventListener('click', playPrev);
-$('npNext').addEventListener('click', playNext);
-$('npStop').addEventListener('click', stopPlayback);
-$('npFav').addEventListener('click', ()=>{ if(currentStation) toggleFavorite(currentStation); });
-$('npVol').addEventListener('input', e=> setVolume(e.target.value));
-
-/* keyboard shortcuts */
-document.addEventListener('keydown', e=>{
-  const tag = (e.target.tagName||'').toLowerCase();
-  if(tag==='input' || tag==='select' || tag==='textarea'){
-    if(e.key==='Escape') e.target.blur();
-    return;
-  }
-  if(e.code==='Space'){ e.preventDefault(); togglePlayPause(); }
-  else if(e.key==='ArrowRight'){ playNext(); }
-  else if(e.key==='ArrowLeft'){ playPrev(); }
-  else if(e.key==='ArrowUp'){ e.preventDefault(); setVolume(Math.min(100, volume+5)); }
-  else if(e.key==='ArrowDown'){ e.preventDefault(); setVolume(Math.max(0, volume-5)); }
-  else if(e.key==='m' || e.key==='M'){ toggleMute(); }
-  else if(e.key==='/'){ e.preventDefault(); $('searchInput').focus(); }
-  else if(e.key==='Escape'){ closeNowPlaying(); }
-});
-
-/* ---------------- navigation ---------------- */
-function buildNav(){
-  $('sideNav').innerHTML = NAV_ITEMS.map(it=>`<button class="nav-item" data-view="${it.id}">${it.icon}<span>${it.label}</span></button>`).join('');
-  $('mobileNav').innerHTML = NAV_ITEMS.map(it=>`<button class="m-item" data-view="${it.id}">${it.icon}</button>`).join('');
-  document.querySelectorAll('[data-view]').forEach(btn=>{
-    btn.addEventListener('click', ()=>switchView(btn.getAttribute('data-view')));
-  });
-}
-function switchView(viewId){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  $('view-'+viewId).classList.add('active');
-  document.querySelectorAll('[data-view]').forEach(btn=>{
-    btn.classList.toggle('active', btn.getAttribute('data-view')===viewId);
-  });
-  window.scrollTo({top:0, behavior:'smooth'});
-  if(viewId==='favorites') renderFavoritesView();
-  if(viewId==='settings') updateSettingsCounts();
-}
-
-/* ---------------- categories ---------------- */
-function renderCategories(){
-  $('categoryChips').innerHTML = CATEGORIES.map(c=>
-    `<button class="chip" data-cat-type="${c.type}" data-cat-value="${escapeAttr(c.value)}"><span class="dot" style="background:linear-gradient(135deg,${c.c1},${c.c2})"></span>${c.label}</button>`
-  ).join('');
-  document.querySelectorAll('.chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      runDiscover(chip.getAttribute('data-cat-type'), chip.getAttribute('data-cat-value'), chip.textContent.trim());
-    });
-  });
-}
-
-async function loadPopular(){
-  const grid = $('popularGrid');
-  grid.innerHTML = `<div class="loading"><div class="spinner"></div>Yükleniyor...</div>`;
-  try{
-    const data = cleanStations(await fetchPopular(24));
-    renderGrid(grid, data, 'Şu anda popüler istasyon bulunamadı.');
-  }catch(e){
-    grid.innerHTML = `<div class="empty-state">Radyo sunucularına ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.</div>`;
-  }
-}
-function loadRecentSection(){
-  const section = $('recentSection');
-  const list = recent.filter(r=>!deadThisSession.has(r.stationuuid));
-  if(!list.length){ section.style.display='none'; return; }
-  section.style.display='block';
-  renderGrid($('recentGrid'), list.slice(0,12));
-}
-
-/* ---------------- discover ---------------- */
-function renderTagRow(){
-  $('tagRow').innerHTML = DISCOVER_TAGS.map(t=>`<button class="tag-pill" data-tag="${escapeAttr(t)}">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('');
-  document.querySelectorAll('.tag-pill').forEach(p=>{
-    p.addEventListener('click', ()=>{
-      document.querySelectorAll('.tag-pill').forEach(x=>x.classList.remove('active'));
-      p.classList.add('active');
-      $('countrySelect').value='';
-      runDiscover('tag', p.getAttribute('data-tag'), p.textContent);
-    });
-  });
-}
-async function populateCountries(){
-  try{
-    const list = await fetchCountries();
-    const sorted = (list||[]).filter(c=>c.name && c.stationcount>0).sort((a,b)=>b.stationcount-a.stationcount).slice(0,60);
-    const sel = $('countrySelect');
-    sorted.forEach(c=>{
-      const opt = document.createElement('option');
-      opt.value = c.name; opt.textContent = `${c.name} (${c.stationcount})`;
-      sel.appendChild(opt);
-    });
-  }catch(e){}
-}
-$('countrySelect').addEventListener('change', e=>{
-  document.querySelectorAll('.tag-pill').forEach(x=>x.classList.remove('active'));
-  if(e.target.value) runDiscover('country', e.target.value, e.target.value);
-});
-
-async function runDiscover(type, value, label){
-  switchView('discover');
-  $('discoverTitle').textContent = label || 'Sonuçlar';
-  const grid = $('discoverGrid');
-  grid.innerHTML = `<div class="loading"><div class="spinner"></div>Yükleniyor...</div>`;
-  try{
-    let data;
-    if(type==='tag') data = await fetchByTag(value, 40);
-    else if(type==='country') data = await fetchByCountry(value, 40);
-    else data = await fetchByName(value, 40);
-    renderGrid(grid, cleanStations(data), 'Bu kategoride çalışan istasyon bulunamadı.');
-  }catch(e){
-    grid.innerHTML = `<div class="empty-state">Arama sırasında bir sorun oluştu. Tekrar deneyin.</div>`;
-  }
-}
-
-/* ---------------- search ---------------- */
-let searchTimer = null;
-$('searchInput').addEventListener('input', e=>{
-  const val = e.target.value.trim();
-  $('searchClear').classList.toggle('show', !!val);
-  clearTimeout(searchTimer);
-  if(!val) return;
-  searchTimer = setTimeout(()=>{ runDiscover('name', val, `"${val}" için sonuçlar`); }, 450);
-});
-$('searchClear').addEventListener('click', ()=>{
-  $('searchInput').value=''; $('searchClear').classList.remove('show');
-});
-
-/* ---------------- favorites view ---------------- */
-function renderFavoritesView(){
-  const grid = $('favGrid');
-  if(!favorites.length){
-    grid.innerHTML = `<div class="empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20.8 4.6c-1.7-1.5-4.4-1.4-6 .3L12 7.7l-2.8-2.8c-1.6-1.7-4.3-1.8-6-.3-1.9 1.7-2 4.6-.2 6.4L12 20l9-8.9c1.8-1.9 1.7-4.8-.2-6.5Z"/></svg>
-      Henüz favori istasyonun yok.<br>Bir istasyonun kalp simgesine dokun.</div>`;
-    return;
-  }
-  renderGrid(grid, favorites);
-}
-
-/* ---------------- appearance ---------------- */
-function applyAccent(key){
-  const a = ACCENTS[key] || ACCENTS.gold;
-  document.documentElement.style.setProperty('--gold', a.c1);
-  document.documentElement.style.setProperty('--coral', a.c2);
-  accentKey = key; saveJSON('suqoo_accent', key);
-  renderAccentSwatches();
-}
-function applyTheme(mode){
-  themeMode = mode; saveJSON('suqoo_theme', mode);
-  document.body.classList.toggle('light', mode==='light');
-  renderThemeButtons();
-}
-function renderAccentSwatches(){
-  const el = $('accentSwatches'); if(!el) return;
-  el.innerHTML = Object.keys(ACCENTS).map(key=>{
-    const a = ACCENTS[key];
-    return `<button class="swatch${key===accentKey?' active':''}" data-accent="${key}" title="${a.name}" style="background:linear-gradient(135deg,${a.c1},${a.c2})"></button>`;
-  }).join('');
-  el.querySelectorAll('[data-accent]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ applyAccent(btn.getAttribute('data-accent')); showToast('Renk güncellendi'); });
-  });
-}
-function renderThemeButtons(){
-  const el = $('themeButtons'); if(!el) return;
-  el.innerHTML = `
-    <button class="seg-btn${themeMode==='dark'?' active':''}" data-theme="dark">Koyu</button>
-    <button class="seg-btn${themeMode==='light'?' active':''}" data-theme="light">Açık</button>`;
-  el.querySelectorAll('[data-theme]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ applyTheme(btn.getAttribute('data-theme')); showToast('Tema güncellendi'); });
-  });
-}
-
-/* ---------------- settings ---------------- */
-function updateSettingsCounts(){
-  $('favCountDesc').textContent = `${favorites.length} istasyon kayıtlı`;
-  $('recentCountDesc').textContent = `${recent.length} istasyon kayıtlı`;
-}
-$('clearFavBtn').addEventListener('click', ()=>{
-  if(!favorites.length) return;
-  if(confirm('Tüm favoriler silinsin mi?')){
-    favorites = []; saveJSON('suqoo_favorites', favorites);
-    refreshAllVisibleFavIcons(); updatePlayerFav(); updateSettingsCounts();
-    showToast('Favoriler temizlendi');
-    if($('view-favorites').classList.contains('active')) renderFavoritesView();
-  }
-});
-$('clearRecentBtn').addEventListener('click', ()=>{
-  if(!recent.length) return;
-  if(confirm('Son dinlenenler geçmişi silinsin mi?')){
-    recent = []; saveJSON('suqoo_recent', recent);
-    updateSettingsCounts(); loadRecentSection();
-    showToast('Geçmiş temizlendi');
-  }
-});
-$('settingsVol').addEventListener('input', e=> setVolume(e.target.value));
-$('hideBrokenToggle').addEventListener('change', e=>{
-  hideBroken = e.target.checked; saveJSON('suqoo_hidebroken', hideBroken);
-  showToast(hideBroken ? 'Bozuk yayın filtresi açık' : 'Bozuk yayın filtresi kapalı');
-  loadPopular();
-});
-$('autoSkipToggle').addEventListener('change', e=>{
-  autoSkip = e.target.checked; saveJSON('suqoo_autoskip', autoSkip);
-  showToast(autoSkip ? 'Sessiz yayınlar otomatik atlanacak' : 'Otomatik atlama kapalı');
-});
-
-/* ---------------- init ---------------- */
-function init(){
-  applyAccent(accentKey);
-  applyTheme(themeMode);
-  buildNav();
-  switchView('home');
-  renderCategories();
-  renderTagRow();
-  $('pVol').value = volume; $('npVol').value = volume; $('settingsVol').value = volume;
-  $('hideBrokenToggle').checked = hideBroken;
-  $('autoSkipToggle').checked = autoSkip;
-  updateSettingsCounts();
-  loadRecentSection();
-  loadPopular();
-  populateCountries();
-}
-init();
-
+applyViz();
 })();
 </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v3d52b47920f24c319d37e2661827c42b1787588026925" integrity="sha512-d9sL6GJLXn6fInD1+TVXhTcQOsmxeHfmHAvwGDIxp5TO+uo1fiWW7mHomMj4MLRlCsJDTqXzWLHJFFlPCEIj/A==" data-cf-beacon='{"version":"2024.11.0","token":"f0f03d0605bf45f1a3b17cf7d5e6861f"}' crossorigin="anonymous"></script>
 </body>
 </html>
